@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय - कर्मचारी तुलना</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Annapurna+SIL:wght@400;700&family=Yatra+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --np-crimson: #DC143C;
+            --np-blue: #003893;
+            --np-blue-dark: #001F54;
+            --np-green: #2D6A4F;
+            --bg-body: #F1F5F9;
+            --card-white: #FFFFFF;
+            --text-main: #1E293B;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Annapurna SIL', serif; 
+            background-color: var(--bg-body); 
+            min-height: 100vh; 
+            padding: 20px; 
+            color: var(--text-main); 
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .month-header, .ministry-name, .section-title {
+            font-family: 'Yatra One', cursive;
+        }
+
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 0 auto 30px auto;
+            background: var(--card-white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border-top: 5px solid var(--np-crimson);
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--np-blue-dark) 0%, var(--np-blue) 100%);
+            color: white;
+            padding: 40px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            text-align: left;
+        }
+
+        .header-logo { height: 120px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        .gov-text { font-size: 1.2rem; display: block; }
+        .ministry-name { font-size: 2.2rem; margin-bottom: 8px; line-height: 1.2; }
+
+        .upload-section {
+            padding: 30px;
+            background: #F8FAFC;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .upload-box {
+            border: 2px dashed #CBD5E1;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-box:hover { border-color: var(--np-blue); background: #F0F9FF; }
+        .upload-box.loaded { border-color: var(--np-green); background: #F0FDF4; }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Annapurna SIL', serif;
+        }
+
+        .btn-primary { background: var(--np-crimson); color: white; }
+        .btn-primary:disabled { background: #E2E8F0; color: #94A3B8; cursor: not-allowed; }
+        .btn-outline { background: white; border: 2px solid var(--np-blue); color: var(--np-blue); }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px 30px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #E2E8F0;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .stat-val { font-size: 2rem; font-weight: 700; display: block; }
+        .stat-label { font-size: 0.95rem; color: #64748B; }
+
+        .chart-container { padding: 0 30px 30px 30px; }
+        .chart-box { border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; background: #fff; }
+
+        .comparison-lists {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 0 30px 40px 30px;
+        }
+
+        .list-box {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 15px 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .bg-new { background: var(--np-green); }
+        .bg-term { background: var(--np-crimson); }
+
+        .list-content { max-height: 400px; overflow-y: auto; padding: 10px; }
+        
+        .emp-item {
+            padding: 12px;
+            border-bottom: 1px solid #F1F5F9;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .emp-item:last-child { border: none; }
+        .emp-name { font-weight: 700; color: var(--np-blue-dark); font-size: 1.1rem; }
+        .emp-meta { font-size: 0.9rem; color: #64748B; display: flex; gap: 15px; }
+
+        .footer {
+            margin-top: auto; text-align: center; padding: 30px;
+            background: #FFFFFF; border-radius: 16px; box-shadow: var(--shadow);
+        }
+        .footer-link { color: var(--np-blue); text-decoration: none; font-weight: 700; }
+
+        @media (max-width: 768px) {
+            .upload-grid, .stats-grid, .comparison-lists { grid-template-columns: 1fr; }
+            .header { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- Header (Same as Payroll) -->
+        <div class="header"><a href="index.html">
+            <img src="https://paytonepal.com/wp-content/uploads/2020/01/Emblem_of_Nepal-416x349.png" alt="नेपाल सरकार" class="header-logo">
+            <div class="header-content"></a>
+                <span class="gov-text">नेपाल सरकार</span>
+                <h1 class="ministry-name">शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</h1>
+                <p>कर्मचारी नियुक्ति तथा सरुवा तुलनात्मक प्रणाली</p>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="upload-grid">
+                <div class="upload-box" id="box1" onclick="document.getElementById('file1').click()">
+                    <input type="file" id="file1" hidden onchange="handleFile(1)">
+                    <div style="font-size: 2.5rem;">📅</div>
+                    <h3 id="label1">अघिल्लो महिनाको फाइल</h3>
+                    <p id="name1" style="font-size: 0.8rem; color: #64748B;">JSON फाइल छनोट गर्नुहोस्</p>
+                </div>
+                <div class="upload-box" id="box2" onclick="document.getElementById('file2').click()">
+                    <input type="file" id="file2" hidden onchange="handleFile(2)">
+                    <div style="font-size: 2.5rem;">🆕</div>
+                    <h3 id="label2">यस महिनाको नयाँ फाइल</h3>
+                    <p id="name2" style="font-size: 0.8rem; color: #64748B;">JSON फाइल छनोट गर्नुहोस्</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; display: flex; justify-content: center; gap: 15px;">
+                <button class="btn btn-primary" id="compareBtn" disabled onclick="compareData()">📊 तुलना गर्नुहोस्</button>
+                <button class="btn btn-outline" onclick="loadDemo()">✨ डेमो डाटा लोड गर्नुहोस्</button>
+            </div>
+        </div>
+
+        <div id="resultsArea" style="display: none;">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card" style="border-top: 4px solid var(--np-blue);">
+                    <span class="stat-val" id="countOld">0</span>
+                    <span class="stat-label">अघिल्लो कुल</span>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid var(--np-blue-dark);">
+                    <span class="stat-val" id="countNew">0</span>
+                    <span class="stat-label">हालको कुल</span>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid var(--np-green);">
+                    <span class="stat-val" style="color: var(--np-green);" id="countAdded">0</span>
+                    <span class="stat-label">नयाँ थपिएका</span>
+                </div>
+                <div class="stat-card" style="border-top: 4px solid var(--np-crimson);">
+                    <span class="stat-val" style="color: var(--np-crimson);" id="countRemoved">0</span>
+                    <span class="stat-label">सरुवा/अवकाश</span>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-container">
+                <div class="chart-box">
+                    <h3 class="section-title" style="margin-bottom: 15px; text-align: center;">परिवर्तनको विश्लेषण</h3>
+                    <div id="compareChart" style="height: 350px;"></div>
+                </div>
+            </div>
+
+            <!-- Detailed Lists -->
+            <div class="comparison-lists">
+                <div class="list-box">
+                    <div class="list-header bg-new">
+                        <span>नयाँ थपिएका कर्मचारीहरू</span>
+                        <span id="badgeNew">0</span>
+                    </div>
+                    <div class="list-content" id="listNew"></div>
+                </div>
+
+                <div class="list-box">
+                    <div class="list-header bg-term">
+                        <span>सरुवा/अवकाश भएकाहरू</span>
+                        <span id="badgeOld">0</span>
+                    </div>
+                    <div class="list-content" id="listOld"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© २०८२ | सर्वाधिकार सुरक्षित | <b>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</b></p>
+        <p>सिर्जनाकर्ता: 
+            <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" class="footer-link">
+                Bibek Rai (विवेक राई)
+            </a>
+        </p>
+    </footer>
+
+    <script>
+        let data1 = null, data2 = null;
+
+        async function handleFile(num) {
+            const file = document.getElementById('file' + num).files[0];
+            if (!file) return;
+            
+            const text = await file.text();
+            try {
+                const json = JSON.parse(text);
+                if (num === 1) data1 = json; else data2 = json;
+                
+                document.getElementById('name' + num).innerText = file.name;
+                document.getElementById('box' + num).classList.add('loaded');
+                checkStatus();
+            } catch(e) { alert("Invalid JSON file"); }
+        }
+
+        function checkStatus() {
+            if (data1 && data2) document.getElementById('compareBtn').disabled = false;
+        }
+
+        function loadDemo() {
+            data1 = [
+                { "नाम": "राम प्रसाद", "पान नं.": "6001", "पद": "अधिकृत" },
+                { "नाम": "हरी माया", "पान नं.": "6002", "पद": "सहायक" }
+            ];
+            data2 = [
+                { "नाम": "हरी माया", "पान नं.": "6002", "पद": "सहायक" },
+                { "नाम": "सिता क्षेत्री", "पान नं.": "6003", "पद": "उप-सचिव" }
+            ];
+            document.getElementById('name1').innerText = "Demo_Old.json";
+            document.getElementById('name2').innerText = "Demo_New.json";
+            document.getElementById('box1').classList.add('loaded');
+            document.getElementById('box2').classList.add('loaded');
+            document.getElementById('compareBtn').disabled = false;
+            compareData();
+        }
+
+        function compareData() {
+            const map1 = new Map(data1.map(i => [i["पान नं."] || i["नाम"], i]));
+            const map2 = new Map(data2.map(i => [i["पान नं."] || i["नाम"], i]));
+
+            const added = data2.filter(i => !map1.has(i["पान नं."] || i["नाम"]));
+            const removed = data1.filter(i => !map2.has(i["पान नं."] || i["नाम"]));
+
+            document.getElementById('resultsArea').style.display = 'block';
+            document.getElementById('countOld').innerText = data1.length;
+            document.getElementById('countNew').innerText = data2.length;
+            document.getElementById('countAdded').innerText = added.length;
+            document.getElementById('countRemoved').innerText = removed.length;
+            document.getElementById('badgeNew').innerText = added.length;
+            document.getElementById('badgeOld').innerText = removed.length;
+
+            renderList('listNew', added);
+            renderList('listOld', removed);
+            renderChart(added.length, removed.length);
+        }
+
+        function renderList(id, list) {
+            const container = document.getElementById(id);
+            if (list.length === 0) {
+                container.innerHTML = '<p style="padding: 20px; text-align: center; color: #94A3B8;">कुनै डाटा फेला परेन</p>';
+                return;
+            }
+            container.innerHTML = list.map(emp => `
+                <div class="emp-item">
+                    <span class="emp-name">${emp["नाम"]}</span>
+                    <div class="emp-meta">
+                        <span>PAN: ${emp["पान नं."] || '-'}</span>
+                        <span>पद: ${emp["पद"] || '-'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderChart(a, r) {
+            const data = [{
+                values: [a, r],
+                labels: ['नयाँ थपिएका', 'सरुवा/अवकाश'],
+                type: 'pie',
+                marker: { colors: ['#2D6A4F', '#DC143C'] }
+            }];
+            const layout = { margin: { t: 0, b: 0, l: 0, r: 0 }, showlegend: true };
+            Plotly.newPlot('compareChart', data, layout);
+        }
+    </script>
+</body>
+</html>

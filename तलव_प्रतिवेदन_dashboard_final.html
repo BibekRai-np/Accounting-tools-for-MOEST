@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>मन्त्रालयका कर्मचारीहरूको बार्षिक तलबी प्रतिवेदन</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Annapurna+SIL:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  :root{--red:#B72525;--crimson:#9B1B30;--blue:#003893;--blueli:#1a4db5;--gold:#D4AF37;--goldli:#F0D060;--white:#fff;--cream:#FDF8F0;--td:#2D1B1B;--tm:#5A3030;--bdr:#C8A87A;--redbg:#FDF0F0;--bluebg:#EEF3FF;--sh:0 4px 24px rgba(155,27,48,.13);--shb:0 4px 24px rgba(0,56,147,.12)}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Annapurna SIL',serif;background:var(--cream);color:var(--td);min-height:100vh}
+  .stripe{height:6px;background:linear-gradient(90deg,var(--blue) 33%,var(--red) 33% 66%,var(--gold) 66%)}
+  /* HEADER */
+  .hdr{background:linear-gradient(135deg,var(--blue) 0%,#001f6e 100%);border-bottom:5px solid var(--gold);position:relative;overflow:hidden}
+  .hdr::before{content:'';position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(212,175,55,.07);border:2px solid rgba(212,175,55,.13)}
+  .hdr::after{content:'';position:absolute;right:20px;top:20px;width:140px;height:140px;border-radius:50%;background:rgba(183,37,37,.09);border:2px solid rgba(183,37,37,.16)}
+  .hdr-govt{display:flex;align-items:center;gap:16px;padding:22px 40px 15px;border-bottom:1px solid rgba(255,255,255,.1);position:relative;z-index:2}
+  .emblem{width:66px;height:66px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(212,175,55,.5);display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--goldli);flex-shrink:0;box-shadow:0 0 20px rgba(212,175,55,.2)}
+  .hdr-titles h1{font-family:'Yatra One',cursive;font-size:1.72rem;color:var(--goldli);letter-spacing:.04em;text-shadow:0 2px 10px rgba(0,0,0,.45)}
+  .hdr-titles .sub1{font-family:'Yatra One',cursive;font-size:1.08rem;color:rgba(240,208,96,.82);margin-top:3px}
+  .hdr-report{padding:13px 40px 17px;position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .hdr-report h2{font-family:'Yatra One',cursive;font-size:1.22rem;color:var(--white);text-shadow:0 1px 6px rgba(0,0,0,.3)}
+  .hdr-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(212,175,55,.16);border:1px solid rgba(212,175,55,.4);border-radius:30px;padding:5px 16px;font-size:.83rem;color:var(--goldli)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--goldli);display:inline-block}
+  /* UPLOADER */
+  .upl{background:var(--white);border-radius:16px;margin:26px 36px 0;padding:20px 26px;border:2px dashed rgba(0,56,147,.22);box-shadow:var(--shb);transition:border-color .2s,background .2s}
+  .upl.drag-over{border-color:var(--blue);background:var(--bluebg)}
+  .upl-inner{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .upl-icon{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--blueli));display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--white);flex-shrink:0}
+  .upl-text{flex:1;min-width:180px}
+  .upl-text h3{font-size:.94rem;color:var(--blue);font-weight:700;margin-bottom:3px}
+  .upl-text p{font-size:.77rem;color:var(--tm)}
+  .upl-btns{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:9px;font-family:'Annapurna SIL',serif;font-size:.88rem;cursor:pointer;border:none;transition:all .2s;font-weight:700}
+  .btn-csv-up{background:var(--red);color:var(--white)}
+  .btn-csv-up:hover{background:var(--crimson);transform:translateY(-1px)}
+  .btn-json-up{background:var(--blue);color:var(--white)}
+  .btn-json-up:hover{background:var(--blueli);transform:translateY(-1px)}
+  .btn-reset{background:rgba(90,48,48,.1);color:var(--tm);border:1px solid var(--bdr)!important}
+  .btn-reset:hover{background:rgba(90,48,48,.18)}
+  .upl-status{margin-top:11px;padding:9px 15px;border-radius:8px;font-size:.82rem;display:none}
+  .upl-status.ok{background:rgba(0,150,100,.1);color:#006644;border:1px solid rgba(0,150,100,.25)}
+  .upl-status.err{background:rgba(183,37,37,.1);color:var(--red);border:1px solid rgba(183,37,37,.2)}
+  /* MAIN */
+  .main{padding:24px 36px 36px;max-width:1700px;margin:0 auto}
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px}
+  .sc{background:var(--white);border-radius:14px;padding:20px 22px;border-left:5px solid var(--red);box-shadow:var(--sh);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+  .sc:nth-child(2){border-left-color:var(--blue)}.sc:nth-child(3){border-left-color:var(--gold)}.sc:nth-child(4){border-left-color:var(--crimson)}
+  .sc:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(155,27,48,.18)}
+  .sc::after{content:'';position:absolute;right:-18px;bottom:-18px;width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,.03)}
+  .sl{font-size:.79rem;color:var(--tm);margin-bottom:6px}.sv{font-size:1.72rem;font-weight:700;color:var(--td)}.ss{font-size:.74rem;color:var(--tm);margin-top:4px}
+  /* FILTER */
+  .flt{background:var(--white);border-radius:14px;padding:17px 22px;margin-bottom:22px;border:1.5px solid rgba(0,56,147,.11);box-shadow:var(--shb);display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .fl{font-size:.91rem;color:var(--blue);font-weight:700;white-space:nowrap}
+  .fl span{display:block;font-size:.72rem;color:var(--tm);font-weight:400;margin-top:2px}
+  .fd{width:1px;height:42px;background:var(--bdr);flex-shrink:0}
+  .sw{position:relative;flex:1;min-width:250px}
+  .sw::after{content:'▼';position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--blue);font-size:.7rem;pointer-events:none}
+  select{width:100%;appearance:none;padding:10px 38px 10px 15px;border:2px solid rgba(0,56,147,.18);border-radius:9px;font-family:'Annapurna SIL',serif;font-size:.95rem;color:var(--td);background:var(--cream);cursor:pointer;transition:border-color .2s,box-shadow .2s;outline:none}
+  select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,56,147,.1)}
+  .fbadge{background:var(--blue);color:var(--white);border-radius:30px;padding:6px 16px;font-size:.83rem;white-space:nowrap}
+  /* CHARTS */
+  .charts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:22px}
+  .cc{background:var(--white);border-radius:14px;padding:17px 14px 10px;box-shadow:var(--sh);border:1px solid rgba(155,27,48,.07)}
+  .ct{font-size:.86rem;color:var(--blue);font-weight:700;margin-bottom:7px;padding-bottom:8px;border-bottom:2px solid var(--redbg)}
+  /* TABLE */
+  .ts{background:var(--white);border-radius:16px;overflow:hidden;box-shadow:var(--sh);border:1px solid rgba(155,27,48,.1)}
+  .th{background:linear-gradient(90deg,var(--red) 0%,var(--crimson) 100%);padding:15px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .thl{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .th h2{font-family:'Yatra One',cursive;color:var(--white);font-size:1.08rem;letter-spacing:.03em}
+  .tcnt{background:rgba(255,255,255,.2);color:var(--white);border-radius:20px;padding:4px 13px;font-size:.8rem}
+  .abtns{display:flex;gap:8px;flex-wrap:wrap}
+  .btn-print{background:rgba(255,255,255,.18);color:var(--white);border:1px solid rgba(255,255,255,.35)!important}
+  .btn-print:hover{background:rgba(255,255,255,.28);transform:translateY(-1px)}
+  .btn-exp{background:var(--gold);color:#3a2000}
+  .btn-exp:hover{background:var(--goldli);transform:translateY(-1px)}
+  .tw{overflow-x:auto;max-height:580px;overflow-y:auto}
+  table{width:100%;border-collapse:collapse;font-size:.79rem;table-layout:fixed}
+  thead th{background:var(--blue);color:var(--white);padding:8px 10px;text-align:left;font-weight:700;font-family:'Annapurna SIL',serif;font-size:.76rem;white-space:normal;word-break:keep-all;overflow-wrap:break-word;line-height:1.35;position:sticky;top:0;z-index:2;border-right:1px solid rgba(255,255,255,.08)}
+  thead th:first-child{width:44px;text-align:center}
+  tbody tr{transition:background .12s;border-bottom:1px solid rgba(0,0,0,.04)}
+  tbody tr:nth-child(even){background:var(--bluebg)}
+  tbody tr:hover{background:rgba(183,37,37,.055)}
+  td{padding:7px 10px;color:var(--td);white-space:normal;word-break:break-word;overflow-wrap:break-word;vertical-align:top;font-family:'Annapurna SIL',serif;line-height:1.45}
+  td:first-child{text-align:center;color:var(--tm);font-size:.74rem}
+  .tn{font-weight:700;color:var(--crimson)}.ts2{font-weight:700;color:var(--blue);text-align:right}.tt{font-weight:800;color:var(--red);text-align:right}.tg{text-align:center}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:.71rem}
+  .bf{background:rgba(100,100,100,.1);color:#555}.b82{background:rgba(183,37,37,.12);color:var(--red)}.b83{background:rgba(0,56,147,.1);color:var(--blue)}.bo{background:rgba(212,175,55,.18);color:#7A5C00}
+  .empty{text-align:center;padding:56px 20px;color:var(--tm);font-size:.95rem}
+  .footer{text-align:center;padding:22px;color:var(--tm);font-size:.76rem;border-top:1px solid rgba(0,0,0,.07);margin-top:26px}
+  @media print{
+    /* Hide screen-only UI */
+    .stripe,.upl,.flt,.charts,.abtns,.stats,.hdr-badge,.footer{display:none!important}
+
+    /* Ink-saver: plain text, no colour, no shadow */
+    *{background:transparent!important;box-shadow:none!important;text-shadow:none!important;color:#000!important;border-color:#aaa!important}
+    body{background:#fff!important;font-family:'Annapurna SIL',serif!important}
+
+    /* Header plain box */
+    .hdr{background:#fff!important;border:1.5px solid #333!important;border-bottom:2px solid #333!important}
+    .hdr-govt{border-bottom:1px solid #bbb!important;padding:6px 12px!important}
+    .hdr-report{padding:5px 12px 7px!important}
+    .hdr-titles h1{color:#000!important;font-size:.95rem!important}
+    .hdr-titles .sub1{color:#222!important;font-size:.78rem!important}
+    .hdr-report h2{color:#000!important;font-size:.86rem!important}
+    .emblem img{width:34px!important;height:34px!important;filter:grayscale(1)!important}
+
+    /* Table section */
+    .ts{border:1.5px solid #333!important}
+    .th{background:#fff!important;border-bottom:1.5px solid #333!important;padding:6px 12px!important}
+    .th h2{color:#000!important;font-size:.84rem!important}
+    .tcnt{background:transparent!important;border:1px solid #999!important;color:#000!important}
+
+    /* Table layout */
+    .tw{max-height:none!important;overflow:visible!important}
+    table{width:100%!important;table-layout:fixed!important;font-size:6.2pt!important;border-collapse:collapse!important}
+    td,th{padding:3px 5px!important;white-space:normal!important;word-break:break-word!important;overflow-wrap:break-word!important;vertical-align:top!important;line-height:1.45!important;border:0.5px solid #bbb!important}
+    thead th{background:#efefef!important;color:#000!important;font-size:5.8pt!important;font-weight:700!important;border:0.5px solid #888!important;word-break:keep-all!important}
+    tbody tr:nth-child(even){background:#f6f6f6!important}
+    .badge{background:transparent!important;border:0.5px solid #555!important;color:#000!important;font-size:5.5pt!important;padding:1px 3px!important;border-radius:2px!important}
+    .tn{font-weight:700!important}
+    .ts2,.tt{text-align:right!important}
+    .main{padding:0!important;max-width:100%!important}
+
+    /* HIDE non-print columns */
+    .ph{display:none!important}
+
+    /* Print footer */
+    .print-footer{display:flex!important}
+
+    @page{size:A4 landscape;margin:10mm 8mm}
+  }
+  @media(max-width:1200px){.stats{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr 1fr}}
+  @media(max-width:700px){.main{padding:14px 10px}.upl{margin:14px 10px 0}.stats{grid-template-columns:1fr 1fr}.charts{grid-template-columns:1fr}.hdr-govt{padding:16px 16px 12px}.hdr-report{padding:10px 16px 14px}.hdr-titles h1{font-size:1.2rem}}
+
+  /* Column width hints for table-layout:fixed */
+  #dataTable col.c-sn   {width:42px}
+  #dataTable col.c-code {width:80px}
+  #dataTable col.c-name {width:130px}
+  #dataTable col.c-seva {width:72px}
+  #dataTable col.c-grp  {width:100px}
+  #dataTable col.c-pad  {width:100px}
+  #dataTable col.c-shre {width:90px}
+  #dataTable col.c-pkrm {width:52px}
+  #dataTable col.c-dt1  {width:82px}
+  #dataTable col.c-dt2  {width:82px}
+  #dataTable col.c-s1   {width:68px}
+  #dataTable col.c-s2   {width:60px}
+  #dataTable col.c-s3   {width:68px}
+  #dataTable col.c-g1   {width:52px}
+  #dataTable col.c-g2   {width:52px}
+  #dataTable col.c-g3   {width:52px}
+  #dataTable col.c-gd   {width:56px}
+  #dataTable col.c-gr   {width:68px}
+  #dataTable col.c-tot  {width:72px}
+  #dataTable col.c-gdt  {width:76px}
+  #dataTable col.c-gmh  {width:82px}
+  #dataTable col.c-chad {width:90px}
+  #dataTable col.c-kaif {width:110px}
+
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+
+<div class="hdr">
+  <div class="hdr-govt">
+    <div class="emblem"><a href="index.html"><img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Emblem_of_Nepal.svg" alt="Nepal Emblem" style="width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(212,175,55,0.5))"></img></a></div>
+    <div class="hdr-titles">
+      <h1>नेपाल सरकार</h1>
+      <div class="sub1">शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</div>
+    </div>
+  </div>
+  <div class="hdr-report">
+    <h2>मन्त्रालयका कर्मचारीहरूको बार्षिक तलबी प्रतिवेदन</h2>
+    <div class="hdr-badge"><span class="dot"></span><span id="hdrSrc">नमुना डेटा — ५ कर्मचारी</span></div>
+  </div>
+</div>
+
+<!-- UPLOADER -->
+<div class="upl" id="upl">
+  <div class="upl-inner">
+    <div class="upl-icon">📂</div>
+    <div class="upl-text">
+      <h3>नयाँ डेटा अपलोड गर्नुहोस् — CSV वा JSON</h3>
+      <p>CSV: हेडर पङ्क्ति अनिवार्य, UTF-8 &nbsp;|&nbsp; JSON: array of objects &nbsp;|&nbsp; फाइल यहाँ तान्नुहोस् (Drag &amp; Drop)</p>
+    </div>
+    <div class="upl-btns">
+      <input type="file" id="fcsv" accept=".csv,text/csv" style="display:none">
+      <input type="file" id="fjson" accept=".json,application/json" style="display:none">
+      <button class="btn btn-csv-up" onclick="document.getElementById('fcsv').click()">📊 CSV अपलोड</button>
+      <button class="btn btn-json-up" onclick="document.getElementById('fjson').click()">{ } JSON अपलोड</button>
+      <button class="btn btn-reset" onclick="resetDefault()">↺ पूर्व डेटा</button>
+    </div>
+  </div>
+  <div class="upl-status" id="uplSt"></div>
+</div>
+
+<div class="main">
+  <div class="stats" id="statsRow"></div>
+
+  <div class="flt">
+    <div class="fl">ग्रेड वृद्धि हुने महिना<span>फिल्टर गर्नुहोस्</span></div>
+    <div class="fd"></div>
+    <div class="sw"><select id="mf" onchange="applyFilter()"><option value="सबै">— सबै महिना हेर्नुहोस् —</option></select></div>
+    <div class="fbadge" id="fbadge">जम्मा: — कर्मचारी</div>
+  </div>
+
+  <div class="charts">
+    <div class="cc"><div class="ct">📊 महिना अनुसार ग्रेड वृद्धि कर्मचारी</div><div id="cMonth" style="height:252px"></div></div>
+    <div class="cc"><div class="ct">🍩 सेवा प्रकार अनुसार वितरण</div><div id="cSeva" style="height:252px"></div></div>
+    <div class="cc"><div class="ct">📈 श्रेणी अनुसार औसत कुल तलव</div><div id="cGrade" style="height:252px"></div></div>
+  </div>
+
+  <div class="ts">
+    <div class="th">
+      <div class="thl">
+        <h2 id="tableTitle">कर्मचारी तलव विवरण</h2>
+        <span class="tcnt" id="tcnt">—</span>
+      </div>
+      <div class="abtns">
+        <button class="btn btn-print" onclick="doPrint()">🖨️ प्रिन्ट</button>
+        <button class="btn btn-exp"   onclick="exportCSV()">⬇ CSV निर्यात (UTF-8)</button>
+      </div>
+    </div>
+    <div class="tw"><table id="dataTable"><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
+  </div>
+</div>
+
+<div class="footer">© २०८२ &nbsp;|&nbsp; शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय &nbsp;|&nbsp; सर्वाधिकार सुरक्षित<br>	<span style="margin-top:6px;display:inline-block;font-size:.82rem;color:#9B1B30;font-weight:700;">💻 Web app by  <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" class="footer-link"> Bibek Rai (विवेक राई)</a>
+	</span></div>
+
+<script>
+const DEF_H = ["सि.नं.", "कर्मचारी संकेत नं.", "कर्मचारीको नाम, थर", "सेवा", "समूह", "पद", "श्रेणी/तह", "पदक्रम", "शुरु नियुक्ति मिति", "हालको पदमा नियुक्ति/बढुवा मिति", "शुरु तलव स्केल", "प्राविधिक ग्रेड थप रकम", "जम्मा तलव स्केल", "खाएको ग्रेड", "थप हुने ग्रेड संख्या", "जम्माग्रेड संख्या", "ग्रेड दर", "जम्मा ग्रेड रकम", "तलव र ग्रेडको जम्मा रकम", "ग्रेड वृद्धि हुने मिति", "ग्रेड वृद्धि हुने महिना", "चाडपर्व खर्च लिने महिना र चाडवर्पवको नाम", "कैफियत (दरबन्दी/ पूल दरबन्दी/ फाजिल)"];
+const DEF_D = [["1", "100001", "राम बहादुर थापा", "शिक्षा", "शिक्षा प्रशासन", "उपसचिव", "रा.प. द्वितीय", "3", "2065-04-15", "2075-06-10", "48737", "0", "48737", "4", "1", "5", "1625", "8125", "56862", "2082-06-10", "2082 आश्विन", "असोज/दशै", "दरबन्दी"], ["2", "100002", "सीता देवी पौडेल", "प्रशासन", "सा.प्रशासन", "शाखा अधिकृत", "रा.प. तृतीय", "4", "2070-09-01", "2070-09-01", "43689", "0", "43689", "6", "1", "7", "1456", "10192", "53881", "2082-09-01", "2082 पौष", "असोज/दशै", "दरबन्दी"], ["3", "100003", "हरि प्रसाद अधिकारी", "इन्जिनियरिङ्ग", "मेट्रोलोजी", "निरीक्षक", "रा.प. तृतीय", "4", "2068-03-22", "2078-11-05", "43689", "2912", "46601", "8", "0", "8", "1456", "11648", "58249", "अन्तिम ग्रेड", "अन्तिम ग्रेड", "असोज/दशै", "दरबन्दी"], ["4", "100004", "मीना कुमारी श्रेष्ठ", "विविध", "विविध", "क.अपरेटर", "रा.प.अनं.प्रथम", "5", "2079-06-15", "2079-06-15", "34730", "0", "34730", "2", "1", "3", "1158", "3474", "38204", "2082-06-15", "2082 आश्विन", "असोज/दशै", "पूल दरबन्दी"], ["5", "100005", "गोविन्द लाल श्रेष्ठ", "प्रशासन", "सा.प्रशासन", "का.सहयोगी", "का.स.पाँचौस्तर", "7", "2055-11-10", "2075-11-10", "32856", "0", "32856", "4", "0", "4", "1095", "4380", "37236", "अन्तिम ग्रेड", "अन्तिम ग्रेड", "असोज/दशै", "फाजिल"]];
+
+// ── STATE ──
+let HEADERS = [...DEF_H];
+let ALL_DATA = [...DEF_D];
+let filteredData = [...ALL_DATA];
+
+// ── COLUMN FINDERS ──
+const GRAD_MON_KEYS = ['ग्रेड वृद्धि हुने महिना'];
+const SEVA_KEYS     = ['सेवा'];
+const GRADE_KEYS    = ['श्रेणी/तह','श्रेणी'];
+const SAL_KEYS      = ['तलव र ग्रेडको जम्मा रकम','कुल तलव','जम्मा तलव'];
+
+function findCol(keys){
+  for(const k of keys){
+    const i=HEADERS.findIndex(h=>h.trim().includes(k.trim()));
+    if(i>=0) return i;
+  }return -1;
+}
+
+// ── CSV PARSER (RFC4180, UTF-8) ──
+function parseCSV(txt){
+  txt=txt.replace(/^\uFEFF/,'');
+  const rows=[];let inQ=false,f='',fs=[];
+  for(let i=0;i<txt.length;i++){
+    const c=txt[i],n=txt[i+1];
+    if(inQ){
+      if(c==='"'&&n==='"'){f+='"';i++;}
+      else if(c==='"'){inQ=false;}
+      else f+=c;
+    }else{
+      if(c==='"'){inQ=true;}
+      else if(c===','){fs.push(f.trim());f='';}
+      else if(c==='\n'||(c==='\r'&&n==='\n')){
+        if(c==='\r')i++;
+        fs.push(f.trim());f='';
+        if(fs.some(x=>x!==''))rows.push(fs);
+        fs=[];
+      }else if(c==='\r'){
+        fs.push(f.trim());f='';
+        if(fs.some(x=>x!==''))rows.push(fs);
+        fs=[];
+      }else f+=c;
+    }
+  }
+  if(f||fs.length){fs.push(f.trim());if(fs.some(x=>x!==''))rows.push(fs);}
+  return rows;
+}
+
+// ── FILE UPLOAD ──
+document.getElementById('fcsv').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const rows=parseCSV(ev.target.result);
+      if(rows.length<2)throw new Error('डेटा पङ्क्ति भेटिएन');
+      let hrow=rows[0],ds=1;
+      if(rows[1]&&rows[1][0]===''&&rows[1].some(c=>c!=='')){
+        hrow=hrow.map((h,i)=>h+(rows[1][i]?' '+rows[1][i]:''));ds=2;
+      }
+      HEADERS=hrow.map(h=>h.trim());
+      ALL_DATA=rows.slice(ds).map(r=>{while(r.length<HEADERS.length)r.push('');return r;});
+      showSt('ok',`✓ ${file.name} — ${ALL_DATA.length} कर्मचारी लोड भयो`);
+      document.getElementById('hdrSrc').textContent=file.name+' — '+ALL_DATA.length+' कर्मचारी';
+      initDash();
+    }catch(err){showSt('err','✗ CSV पढ्न सकिएन: '+err.message);}
+    e.target.value='';
+  };
+  rd.readAsText(file,'UTF-8');
+});
+
+document.getElementById('fjson').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const j=JSON.parse(ev.target.result);
+      if(!Array.isArray(j)||!j.length)throw new Error('Array of objects आवश्यक');
+      HEADERS=Object.keys(j[0]);
+      ALL_DATA=j.map(o=>HEADERS.map(h=>String(o[h]??'')));
+      showSt('ok',`✓ ${file.name} — ${ALL_DATA.length} कर्मचारी लोड भयो`);
+      document.getElementById('hdrSrc').textContent=file.name+' — '+ALL_DATA.length+' कर्मचारी';
+      initDash();
+    }catch(err){showSt('err','✗ JSON पढ्न सकिएन: '+err.message);}
+    e.target.value='';
+  };
+  rd.readAsText(file,'UTF-8');
+});
+
+// Drag & Drop
+const uplEl=document.getElementById('upl');
+uplEl.addEventListener('dragover',e=>{e.preventDefault();uplEl.classList.add('drag-over');});
+uplEl.addEventListener('dragleave',()=>uplEl.classList.remove('drag-over'));
+uplEl.addEventListener('drop',e=>{
+  e.preventDefault();uplEl.classList.remove('drag-over');
+  const file=e.dataTransfer.files[0];if(!file)return;
+  const id=file.name.endsWith('.json')?'fjson':'fcsv';
+  const inp=document.getElementById(id);
+  const dt=new DataTransfer();dt.items.add(file);inp.files=dt.files;
+  inp.dispatchEvent(new Event('change'));
+});
+
+function showSt(t,m){
+  const el=document.getElementById('uplSt');
+  el.className='upl-status '+t;el.textContent=m;el.style.display='block';
+  setTimeout(()=>el.style.display='none',5500);
+}
+
+function resetDefault(){
+  HEADERS=[...DEF_H];ALL_DATA=[...DEF_D];
+  document.getElementById('hdrSrc').textContent='नमुना डेटा — ५ कर्मचारी';
+  showSt('ok','↺ नमुना डेटामा फर्कियो');
+  initDash();
+}
+
+// ── INIT ──
+function initDash(){
+  filteredData=[...ALL_DATA];
+  buildHead();populateDD();applyFilter();renderCharts();
+}
+
+function buildHead(){
+  const cls=['c-sn','c-code','c-name','c-seva','c-grp','c-pad','c-shre','c-pkrm','c-dt1','c-dt2','c-s1','c-s2','c-s3','c-g1','c-g2','c-g3','c-gd','c-gr','c-tot','c-gdt','c-gmh','c-chad','c-kaif'];
+  const tbl=document.getElementById('dataTable');
+  const old=tbl.querySelector('colgroup');if(old)old.remove();
+  const cg=document.createElement('colgroup');
+  cg.innerHTML='<col class="c-sn">'+HEADERS.map((_,i)=>`<col class="${cls[i]||''}">`).join('');
+  tbl.insertBefore(cg,tbl.firstChild);
+  document.getElementById('thead').innerHTML=
+    '<tr><th class="ph">सि.नं.</th>'+HEADERS.map(h=>{
+      const hide=!isPrintCol(h)?'ph':'';
+      return `<th class="${hide}">${h}</th>`;
+    }).join('')+'</tr>';
+}
+
+function populateDD(){
+  const ci=findCol(GRAD_MON_KEYS);
+  const sel=document.getElementById('mf');
+  sel.innerHTML='<option value="सबै">— सबै महिना हेर्नुहोस् —</option>';
+  if(ci<0)return;
+  const months=[...new Set(ALL_DATA.map(r=>r[ci]||'—'))].sort();
+  months.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});
+}
+
+function applyFilter(){
+  const val=document.getElementById('mf').value;
+  const ci=findCol(GRAD_MON_KEYS);
+  filteredData=(val==='सबै'||ci<0)?[...ALL_DATA]:ALL_DATA.filter(r=>(r[ci]||'')=== val);
+  renderTable(filteredData);updateStats(filteredData);
+  const badge=document.getElementById('fbadge');
+  badge.textContent=(val==='सबै'?'जम्मा: ':'फिल्टर: ')+filteredData.length+' कर्मचारी';
+  document.getElementById('tcnt').textContent=filteredData.length+' कर्मचारी';
+  // Dynamic table title
+  const titleEl=document.getElementById('tableTitle');
+  if(titleEl){
+    titleEl.textContent=(val==='सबै')
+      ?'कर्मचारी तलव विवरण'
+      :val+'मा ग्रेडबृद्धिहुने कर्मचारीहरूको विवरण';
+  }
+}
+
+// ── TABLE ──
+function gBadge(v){
+  if(!v||v==='अन्तिम ग्रेड')return `<span class="badge bf">${v||'—'}</span>`;
+  if(v.startsWith('2082'))return `<span class="badge b82">${v}</span>`;
+  if(v.startsWith('2083'))return `<span class="badge b83">${v}</span>`;
+  return `<span class="badge bo">${v}</span>`;
+}
+
+function renderTable(data){
+  const tbody=document.getElementById('tbody');
+  const gci=findCol(GRAD_MON_KEYS);
+  const tci=findCol(SAL_KEYS);
+  if(!data.length){tbody.innerHTML=`<tr><td colspan="${HEADERS.length+1}"><div class="empty">कुनै कर्मचारी फेला परेन ।</div></td></tr>`;return;}
+  tbody.innerHTML=data.map((r,i)=>{
+    const cells=r.map((cell,ci2)=>{
+      const hdr=HEADERS[ci2]||'';
+      const hide=!isPrintCol(hdr)?'ph':'';
+      if(ci2===gci)return `<td class="tg ${hide}">${gBadge(cell)}</td>`;
+      const h=hdr.toLowerCase();
+      const isN=h.includes('तलव')||h.includes('रकम')||h.includes('दर');
+      const isTot=(h.includes('जम्मा')&&h.includes('तलव'))||h.includes('जम्मा रकम');
+      const isNm=ci2===2;
+      let cls=isTot?'tt':isN?'ts2':isNm?'tn':'';
+      const disp=(isN&&cell)?'रु. '+(parseInt(cell)||0).toLocaleString():(cell||'—');
+      return `<td class="${cls} ${hide}">${disp}</td>`;
+    }).join('');
+    return `<tr><td class="ph">${i+1}</td>${cells}</tr>`;
+  }).join('');
+}
+
+// ── STATS ──
+function updateStats(data){
+  const tci=findCol(SAL_KEYS);
+  const gci=findCol(GRAD_MON_KEYS);
+  const tot=data.length;
+  const totS=tci>=0?data.reduce((s,r)=>s+(parseInt(r[tci])||0),0):0;
+  const avg=tot?Math.round(totS/tot):0;
+  const wi=gci>=0?data.filter(r=>r[gci]&&r[gci]!=='अन्तिम ग्रेड').length:0;
+  document.getElementById('statsRow').innerHTML=`
+    <div class="sc"><div class="sl">जम्मा कर्मचारी</div><div class="sv">${tot.toLocaleString()}</div><div class="ss">स्थायी कर्मचारी(तलवी प्रतिवेदन पास हुने)</div></div>
+    <div class="sc"><div class="sl">ग्रेड वृद्धि हुने</div><div class="sv">${wi.toLocaleString()}</div><div class="ss">यस आ.व.मा तलब बृद्धिहुने कर्मचारीको संख्या</div></div>
+    <div class="sc"><div class="sl">कुल तलव योग</div><div class="sv">रु. ${(totS/100000).toFixed(1)} लाख</div><div class="ss">प्रति महिना</div></div>
+    <div class="sc"><div class="sl">औसत तलव</div><div class="sv">रु. ${avg.toLocaleString()}</div><div class="ss">प्रति कर्मचारी</div></div>
+`;
+}
+
+// ── CHARTS ──
+function renderCharts(){chMonth();chSeva();chGrade();}
+
+function chMonth(){
+  const ci=findCol(GRAD_MON_KEYS);
+  if(ci<0){document.getElementById('cMonth').innerHTML='<div class="empty">डेटा छैन</div>';return;}
+  const c={};ALL_DATA.forEach(r=>{const m=r[ci]||'—';c[m]=(c[m]||0)+1;});
+  const e=Object.entries(c).sort((a,b)=>b[1]-a[1]);
+  Plotly.newPlot('cMonth',[{type:'bar',x:e.map(x=>x[0]),y:e.map(x=>x[1]),
+    marker:{color:e.map(x=>x[0]==='अन्तिम ग्रेड'?'#888':x[0].startsWith('2082')?'#B72525':'#003893')},
+    hovertemplate:'%{x}<br><b>%{y}</b> कर्मचारी<extra></extra>'}],
+    {margin:{t:6,r:6,b:86,l:36},font:{family:'Annapurna SIL,serif',size:10},
+    paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
+    xaxis:{tickangle:-38,tickfont:{size:9}},yaxis:{gridcolor:'rgba(0,0,0,.05)'},showlegend:false},
+    {responsive:true,displayModeBar:false});
+}
+
+function chSeva(){
+  const ci=findCol(SEVA_KEYS);
+  if(ci<0){document.getElementById('cSeva').innerHTML='<div class="empty">डेटा छैन</div>';return;}
+  const c={};ALL_DATA.forEach(r=>{const s=r[ci]||'अन्य';c[s]=(c[s]||0)+1;});
+  const pal=['#B72525','#003893','#D4AF37','#9B1B30','#1a4db5','#7A5C00','#6B7280','#374151'];
+  Plotly.newPlot('cSeva',[{type:'pie',labels:Object.keys(c),values:Object.values(c),hole:.42,
+    marker:{colors:pal},textinfo:'label+percent',
+    hovertemplate:'%{label}<br>%{value} (%{percent})<extra></extra>',
+    textfont:{family:'Annapurna SIL,serif',size:10}}],
+    {margin:{t:6,r:6,b:6,l:6},font:{family:'Annapurna SIL,serif',size:10},
+    paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',showlegend:false},
+    {responsive:true,displayModeBar:false});
+}
+
+function chGrade(){
+  const gci=findCol(GRADE_KEYS);const tci=findCol(SAL_KEYS);
+  if(gci<0||tci<0){document.getElementById('cGrade').innerHTML='<div class="empty">डेटा छैन</div>';return;}
+  const m={};ALL_DATA.forEach(r=>{const g=(r[gci]||'—').trim();if(!m[g])m[g]=[];m[g].push(parseInt(r[tci])||0);});
+  const pal=['#003893','#1a4db5','#B72525','#C94040','#D4AF37','#9B1B30','#6B7280','#374151','#888'];
+  const lb=[],av=[],cl=[];
+  Object.entries(m).forEach(([g,s],i)=>{lb.push(g);av.push(Math.round(s.reduce((a,b)=>a+b,0)/s.length));cl.push(pal[i%pal.length]);});
+  Plotly.newPlot('cGrade',[{type:'bar',x:lb,y:av,marker:{color:cl},
+    text:av.map(a=>'रु.'+Math.round(a/1000)+'K'),textposition:'outside',
+    textfont:{size:9,family:'Annapurna SIL,serif'},
+    hovertemplate:'%{x}<br>औसत: रु. %{y:,.0f}<extra></extra>'}],
+    {margin:{t:20,r:6,b:78,l:56},font:{family:'Annapurna SIL,serif',size:9},
+    paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
+    xaxis:{tickangle:-35,tickfont:{size:8}},yaxis:{gridcolor:'rgba(0,0,0,.05)',tickformat:','},showlegend:false},
+    {responsive:true,displayModeBar:false});
+}
+
+// ── EXPORT CSV ──
+function exportCSV(){
+  const sel=document.getElementById('mf').value;
+  const rows=[HEADERS.map(esc).join(','),...filteredData.map(r=>r.map(esc).join(','))];
+  const blob=new Blob(['\uFEFF'+rows.join('\r\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='तलबी_प्रतिवेदन_'+(sel==='सबै'?'सबै':sel.replace(/\s+/g,'_'))+'.csv';
+  a.click();URL.revokeObjectURL(a.href);
+}
+function esc(v){const s=String(v??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s;}
+
+
+// ── PRINT with datetime ──
+function doPrint(){
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  const dateStr=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  const timeStr=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+  const el=document.getElementById('printDateTime');
+  if(el) el.textContent='मुद्रण मिति: '+dateStr+'  समय: '+timeStr;
+  window.print();
+}
+
+
+// ── PRINT-ONLY COLUMNS — exact header matching ──
+// Matches by exact string; कैफियत matches any header starting with that word
+function isPrintCol(header){
+  const h=header.trim();
+  const EXACT=[
+    'कर्मचारी संकेत नं.',
+    'कर्मचारीको नाम, थर',
+    'पद',
+    'शुरु नियुक्ति मिति',
+    'हालको पदमा नियुक्ति/बढुवा मिति',
+    'जम्मा तलव स्केल',
+    'जम्माग्रेड संख्या',
+    'ग्रेड दर',
+    'जम्मा ग्रेड रकम',
+    'ग्रेड वृद्धि हुने मिति'
+  ];
+  if(EXACT.includes(h)) return true;
+  if(h.startsWith('कैफियत')) return true;
+  return false;
+}
+
+// ── BOOT ──
+initDash();
+</script>
+
+<!-- PRINT FOOTER (visible only when printing) -->
+<div class="print-footer" style="display:none;justify-content:space-between;align-items:center;padding:6px 14px;border-top:1px solid #999;font-size:7.5pt;font-family:'Annapurna SIL',serif;color:#000;margin-top:4px;">
+  <span id="printDateTime"></span>
+  <span>💻 Web app by Bibek Rai</span>
+</div>
+
+</body>
+</html>

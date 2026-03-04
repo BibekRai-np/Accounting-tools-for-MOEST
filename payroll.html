@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय - पारिश्रमिक प्रतिवेदन</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Annapurna+SIL:wght@400;700&family=Yatra+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --np-crimson: #DC143C;
+            --np-blue: #003893;
+            --np-blue-dark: #001F54;
+            --np-green: #2D6A4F;
+            --bg-body: #F1F5F9;
+            --card-white: #FFFFFF;
+            --text-main: #1E293B;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Annapurna SIL', serif; 
+            background-color: var(--bg-body); 
+            min-height: 100vh; 
+            padding: 20px; 
+            color: var(--text-main); 
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .month-header, .ministry-name {
+            font-family: 'Yatra One', cursive;
+        }
+
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 0 auto 30px auto;
+            background: var(--card-white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border-top: 5px solid var(--np-crimson);
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--np-blue-dark) 0%, var(--np-blue) 100%);
+            color: white;
+            padding: 40px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            text-align: left;
+            position: relative;
+        }
+
+        .header-logo {
+            height: 120px;
+            width: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        .gov-text {
+            font-family: 'Annapurna SIL', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .ministry-name {
+            font-size: 2.2rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .header-content p {
+            opacity: 0.85;
+            font-weight: 400;
+            font-size: 1.1rem;
+        }
+
+        .utility-bar {
+            background: #FFFFFF;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #E2E8F0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-primary { background: var(--np-crimson); color: white; }
+        .btn-primary:hover { background: #b11030; transform: translateY(-1px); }
+
+        .btn-success { background: var(--np-green); color: white; }
+        .btn-success:hover { background: #23533E; }
+
+        .btn-outline { background: white; border: 1.5px solid #CBD5E1; color: #475569; }
+        .btn-outline:hover { border-color: var(--np-blue); color: var(--np-blue); background: #f8fafc; }
+
+        .search-section {
+            padding: 20px 30px;
+            background: #F8FAFC;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: 'Annapurna SIL', serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--np-blue);
+            box-shadow: 0 0 0 4px rgba(0, 56, 147, 0.1);
+        }
+
+        .summary-ribbon {
+            background: #fff;
+            padding: 15px 30px;
+            border-bottom: 2px solid var(--np-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .ribbon-info span { margin-right: 25px; color: #64748b; font-size: 1rem; }
+        .ribbon-info b { color: var(--np-crimson); font-size: 1.1rem; }
+
+        .comparison-grid {
+            display: grid;
+            background: #E2E8F0;
+            gap: 1px;
+            overflow-x: auto;
+        }
+
+        .field-label {
+            background: #F8FAFC;
+            padding: 12px 20px;
+            font-weight: 700;
+            color: var(--np-blue-dark);
+            font-size: 0.95rem;
+        }
+
+        .month-header {
+            background: var(--np-blue-dark);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 400;
+            font-size: 1.2rem;
+            letter-spacing: 0.05em;
+        }
+
+        .data-cell {
+            padding: 12px 20px;
+            background: white;
+            text-align: right;
+            font-size: 1rem;
+        }
+
+        .highlight-net {
+            background: #F0FDF4;
+            font-weight: 700;
+            color: var(--np-green);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 100px 20px;
+            color: #94a3b8;
+        }
+
+        /* Footer Styles */
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 30px;
+            background: #FFFFFF;
+            border-top: 1px solid #E2E8F0;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .footer p {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .footer-link {
+            color: var(--np-blue);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-link:hover {
+            color: var(--np-crimson);
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; text-align: center; }
+            .header-logo { height: 90px; }
+            .ministry-name { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="header"><a href="index.html">
+            <img src="https://paytonepal.com/wp-content/uploads/2020/01/Emblem_of_Nepal-416x349.png" 
+                 alt="नेपाल सरकार" 
+                 class="header-logo"
+                 onerror="this.style.display='none'"></a>
+            <div class="header-content">
+                <span class="gov-text">नेपाल सरकार</span>
+                <h1 class="ministry-name">शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</h1>
+                <p>बहु-महिना पारिश्रमिक प्रतिवेदन निर्माण गर्ने प्रणाली</p>
+            </div>
+        </div>
+
+        <div class="utility-bar">
+            <div style="display: flex; gap: 10px;">
+                <input type="file" id="fileInput" accept=".json" multiple style="display:none" onchange="handleFileUpload(event)">
+                <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📁 JSON फाइलहरू छनोट गर्नुहोस्</button>
+                <button class="btn btn-outline" onclick="loadSampleData()">✨ नमूना महिनाहरू लोड गर्नुहोस्</button>
+            </div>
+            <div id="fileStatus" style="font-size: 1rem; font-weight: 700; color: var(--np-blue);">कुनै रेकर्ड लोड गरिएको छैन</div>
+        </div>
+
+        <div class="search-section" id="searchBar" style="display: none;">
+            <input type="text" id="employeeSearch" class="search-input" placeholder="कर्मचारीको नाम वा प्यान नम्बरबाट खोज्नुहोस्..." oninput="searchEmployee()">
+        </div>
+
+        <div id="summaryArea" class="summary-ribbon" style="display: none;">
+            <div class="ribbon-info">
+                <span>नाम: <b id="resName">-</b></span>
+                <span>प्यान: <b id="resPan">-</b></span>
+                <span>पद: <b id="resPos">-</b></span>
+            </div>
+            <button class="btn btn-success" onclick="exportEmployeeCSV()">📥 CSV रिपोर्ट डाउनलोड गर्नुहोस्</button>
+        </div>
+
+        <div id="resultsView" style="display: none;">
+            <div class="comparison-grid" id="comparisonGrid"></div>
+        </div>
+
+        <div id="noDataSection" class="no-data">
+            <div style="font-size: 4rem; margin-bottom: 20px;">📜</div>
+            <h2>मन्त्रालय पारिश्रमिक डाटाबेस</h2>
+            <p> विश्लेषण सुरु गर्न कृपया मासिक रिपोर्ट फाइलहरू अपलोड गर्नुहोस्।</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© २०८२ | सर्वाधिकार सुरक्षित | <b>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</b></p>
+        <p>सिर्जनाकर्ता: 
+            <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" class="footer-link">
+                Bibek Rai (विवेक राई)
+            </a>
+        </p>
+    </footer>
+
+    <script>
+        let allData = [];
+        let currentSearchRecords = {}; 
+        let currentSortedMonths = [];
+
+        const fieldsToDisplay = [
+            { label: "महिना", key: "महिना" },
+            { label: "सि.नं.", key: "सि.नं." },
+            { label: "सिटरोल नं.", key: "सिटरोल नं." },
+            { label: "पान नं.", key: "पान नं." },
+            { label: "नाम", key: "नाम" },
+            { label: "लिङ्ग", key: "लिङ्ग" },
+            { label: "वैवाहिक स्थिति", key: "वैवाहिक स्थिति" },
+            { label: "पद", key: "पद" },
+            { label: "तलब", key: "तलब", isCurrency: true },
+            { label: "ग्रेड", key: "ग्रेड", isCurrency: true },
+            { label: "महंगी भत्ता", key: "महंगी भत्ता", isCurrency: true },
+            { label: "ईन्घन", key: "ईन्घन", isCurrency: true },
+            { label: "मर्मत", key: "मर्मत", isCurrency: true },
+            { label: "सञ्चार", key: "सञ्चार", isCurrency: true },
+            { label: "ह.स.चा.", key: "ह.स.चा.", isCurrency: true },
+            { label: "क.सं.कोष (तलब)", key: "क.सं.कोष (तलब)", isCurrency: true },
+            { label: "क.सं.कोष कट्टी", key: "क.सं.कोष (तलब) कट्टी", isCurrency: true },
+            { label: "ना.ल.कोष कट्टी", key: "ना.ल.कोष (तलब) कट्टी", isCurrency: true },
+            { label: "निवृत्तीभरण कोष", key: "निवृत्तीभरण कोष(तलब)", isCurrency: true },
+            { label: "निवृत्तीभरण कट्टी", key: "निवृत्तीभरण कोष(तलब) कट्टी", isCurrency: true },
+            { label: "सामाजिक सुरक्षा कर", key: "सामाजिक सुरक्षा कर (तलब) कट्टी", isCurrency: true },
+            { label: "पारिश्रमिक कर", key: "पारिश्रमिक कर (तलब) कट्टी", isCurrency: true },
+            { label: "सावधिक बिमा कोष", key: "योगदानमा आधारीत/सावधिक बिमा कोष(तलब)", isCurrency: true },
+            { label: "बिमा कोष कट्टी", key: "योगदानमा आधारीत/सावधिक बिमा कोष(तलब) कट्टी", isCurrency: true },
+            { label: "खुद पाउने (Net)", key: "खुद पाउने", isCurrency: true, isNet: true }
+        ];
+
+        async function handleFileUpload(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            allData = [];
+            let fileCount = 0;
+
+            for (const file of files) {
+                const text = await file.text();
+                try {
+                    const json = JSON.parse(text);
+                    allData = allData.concat(json);
+                    fileCount++;
+                } catch (err) { console.error("Error parsing", file.name); }
+            }
+            initSystem(fileCount);
+        }
+
+        function loadSampleData() {
+            const months = ['बैशाख', 'जेठ', 'असार'];
+            allData = [];
+            months.forEach(m => {
+                const data = [
+                    { "सि.नं.": 1, "नाम": "राम शर्मा", "पान नं.": 601234, "पद": "प्रबन्धक", "महिना": m, "तलब": 45000, "ग्रेड": 2000, "महंगी भत्ता": 4000, "खुद पाउने": 42000, "क.सं.कोष (तलब) कट्टी": -4500, "सामाजिक सुरक्षा कर (तलब) कट्टी": -500 },
+                    { "सि.नं.": 2, "नाम": "सिता कुमारी", "पान नं.": 601235, "पद": "अधिकृत", "महिना": m, "तलब": 35000, "ग्रेड": 1500, "महंगी भत्ता": 4000, "खुद पाउने": 34000, "क.सं.कोष (तलब) कट्टी": -3500, "सामाजिक सुरक्षा कर (तलब) कट्टी": -400 }
+                ];
+                allData = allData.concat(data);
+            });
+            initSystem(months.length);
+        }
+
+        function initSystem(count) {
+            document.getElementById('fileStatus').innerText = `${count} महिना लोड गरियो / ${allData.length} रेकर्डहरू`;
+            document.getElementById('noDataSection').style.display = 'none';
+            document.getElementById('searchBar').style.display = 'block';
+            document.getElementById('resultsView').style.display = 'block';
+            searchEmployee(); 
+        }
+
+        function searchEmployee() {
+            const term = document.getElementById('employeeSearch').value.toLowerCase();
+            if (!term) {
+                document.getElementById('comparisonGrid').innerHTML = '<div class="no-data" style="grid-column: 1/-1">खोज्नको लागि कृपया नाम वा प्यान नम्बर टाइप गर्नुहोस्</div>';
+                document.getElementById('summaryArea').style.display = 'none';
+                return;
+            }
+
+            const records = allData.filter(d => 
+                (d["नाम"] && d["नाम"].toLowerCase().includes(term)) || 
+                (d["पान नं."] && d["पान नं."].toString().includes(term))
+            );
+
+            if (records.length === 0) {
+                document.getElementById('comparisonGrid').innerHTML = '<div class="no-data" style="grid-column: 1/-1">कुनै नतिजा भेटिएन।</div>';
+                document.getElementById('summaryArea').style.display = 'none';
+                return;
+            }
+
+            currentSearchRecords = {};
+            records.forEach(r => {
+                const m = r["महिना"] || "अज्ञात";
+                if (!currentSearchRecords[m]) currentSearchRecords[m] = r;
+            });
+
+            currentSortedMonths = Object.keys(currentSearchRecords).sort();
+            
+            const first = currentSearchRecords[currentSortedMonths[0]];
+            document.getElementById('summaryArea').style.display = 'flex';
+            document.getElementById('resName').innerText = first["नाम"] || "-";
+            document.getElementById('resPan').innerText = first["पान नं."] || "-";
+            document.getElementById('resPos').innerText = first["पद"] || "-";
+
+            renderVerticalGrid();
+        }
+
+        function renderVerticalGrid() {
+            const container = document.getElementById('comparisonGrid');
+            container.style.gridTemplateColumns = `260px repeat(${currentSortedMonths.length}, 1fr)`;
+            
+            let html = `<div style="background: var(--np-blue-dark)"></div>`; 
+            
+            currentSortedMonths.forEach(m => {
+                html += `<div class="month-header">${m}</div>`;
+            });
+
+            fieldsToDisplay.forEach(field => {
+                html += `<div class="field-label">${field.label}</div>`;
+                currentSortedMonths.forEach(m => {
+                    const val = currentSearchRecords[m][field.key];
+                    const displayVal = formatValue(val, field.isCurrency);
+                    const classes = `data-cell ${field.isNet ? 'highlight-net' : ''}`;
+                    html += `<div class="${classes}">${displayVal}</div>`;
+                });
+            });
+
+            container.innerHTML = html;
+        }
+
+        function formatValue(val, isCurrency) {
+            if (val === undefined || val === null || val === "") return "-";
+            if (isCurrency && !isNaN(val)) {
+                return "रु. " + Number(val).toLocaleString('ne-NP');
+            }
+            return val;
+        }
+
+        function exportEmployeeCSV() {
+            if (!currentSortedMonths.length) return;
+            const name = document.getElementById('resName').innerText;
+            const rows = [["विवरण / महिना", ...currentSortedMonths]];
+
+            fieldsToDisplay.forEach(field => {
+                const row = [field.label];
+                currentSortedMonths.forEach(m => {
+                    row.push(currentSearchRecords[m][field.key] || 0);
+                });
+                rows.push(row);
+            });
+
+            const BOM = "\uFEFF";
+            const csvData = rows.map(e => e.map(val => `"${val}"`).join(",")).join("\n");
+            const blob = new Blob([BOM + csvData], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `पारिश्रमिक_रिपोर्ट_${name.replace(/\s+/g, '_')}.csv`;
+            link.click();
+        }
+    </script>
+</body>
+</html>

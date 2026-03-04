@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय - गृह पृष्ठ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Annapurna+SIL:wght@400;700&family=Yatra+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --np-crimson: #DC143C;
+            --np-blue: #003893;
+            --np-blue-dark: #001F54;
+            --bg-body: #F1F5F9;
+            --card-white: #FFFFFF;
+            --text-main: #1E293B;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Annapurna SIL', serif; 
+            background-color: var(--bg-body); 
+            min-height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+        }
+
+        h1, h2, h3, .ministry-name {
+            font-family: 'Yatra One', cursive;
+        }
+
+        /* Main Container */
+        .landing-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header Section */
+        .header-card {
+            background: linear-gradient(135deg, var(--np-blue-dark) 0%, var(--np-blue) 100%);
+            color: white;
+            width: 100%;
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-bottom: 5px solid var(--np-crimson);
+        }
+
+        .header-logo {
+            height: 80px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .gov-text { font-size: 1.1rem; font-weight: 400; }
+        .ministry-name { font-size: 2.2rem; margin: 8px 0; }
+        .sub-text { 
+            opacity: 0.95; 
+            font-size: 1.1rem; 
+            display: inline-block;
+            padding: 8px 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Buttons Grid - 2x2 Layout */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+            gap: 25px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            background: var(--card-white);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #E2E8F0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--np-blue);
+            transition: height 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+            border-color: var(--np-blue);
+        }
+
+        .action-card:hover::before {
+            height: 6px;
+            background: var(--np-crimson);
+        }
+
+        .icon-box {
+            width: 64px;
+            height: 64px;
+            background: #F1F5F9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .action-card h2 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: var(--np-blue-dark);
+        }
+
+        .action-card p {
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        /* Instruction Card */
+        .info-section {
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border-left: 6px solid var(--np-blue);
+        }
+
+        .info-section h3 {
+            color: var(--np-crimson);
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .step-item {
+            background: #F8FAFC;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px dashed #CBD5E1;
+            position: relative;
+        }
+
+        .step-number {
+            background: var(--np-blue);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .step-item h4 {
+            color: var(--np-blue-dark);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .link-text {
+            color: var(--np-blue);
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .link-text:hover {
+            color: var(--np-crimson);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background: #FFFFFF;
+            border-top: 1px solid #E2E8F0;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .footer p { color: #64748b; margin-bottom: 8px; }
+        .footer-link {
+            color: var(--np-blue);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .action-grid { 
+                grid-template-columns: 1fr; /* Stack on small screens */
+            }
+            .ministry-name { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing-container">
+        <!-- Header -->
+        <div class="header-card">
+            <img src="https://paytonepal.com/wp-content/uploads/2020/01/Emblem_of_Nepal-416x349.png" 
+                 alt="नेपाल सरकार" class="header-logo">
+            <div class="gov-text">नेपाल सरकार</div>
+            <h1 class="ministry-name">शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</h1>
+            <p class="sub-text">आर्थिक प्रशासन शाखासँग सम्बन्धित कार्यहरूमा सहजताका लागि निर्मित प्रणालीहरू (TOOLS By Bibek Rai)</p>
+        </div>
+
+        <!-- Main Action Buttons - 2x2 Grid -->
+        <div class="action-grid">
+            <!-- 1. Payroll Report -->
+            <a href="payroll.html" class="action-card">
+                <div class="icon-box">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#003893" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+                <h2>बहु-महिना पारिश्रमिक प्रतिवेदन</h2>
+                <p>महिनागत पारिश्रमिक विवरण प्रविष्ट गरी एकीकृत रिपोर्ट निकाल्नुहोस्।</p>
+            </a>
+
+            <!-- 2. Comparison System -->
+            <a href="comparison.html" class="action-card">
+                <div class="icon-box">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#003893" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+                </div>
+                <h2>कर्मचारी तुलना प्रणाली</h2>
+                <p>कर्मचारी हेरफेर (थप/सरुवा/अवकास) को तुलनात्मक विवरण हेर्नुहोस्।</p>
+            </a>
+
+            <!-- 3. Tax Calculator -->
+            <a href="tax_calculator_final.html" class="action-card">
+                <div class="icon-box">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#003893" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <h2>आयकर गणना प्रणाली</h2>
+                <p>कर्मचारीको वार्षिक आयकर गणना र स्ल्याब विश्लेषण गर्ने प्रणाली।</p>
+            </a>
+
+            <!-- 4. Annual Salary Dashboard -->
+            <a href="तलव_प्रतिवेदन_dashboard_final.html" class="action-card">
+                <div class="icon-box">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#003893" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                </div>
+                <h2>बार्षिक तलबी प्रतिवेदन</h2>
+                <p>ग्रेड वृद्धि हुने महिना बमोजिम कर्मचारी विवरण र ड्यासबोर्ड (Dashboard) हेर्नुहोस्।</p>
+            </a>
+        </div>
+
+        <!-- CSV to JSON Instruction Section -->
+        <div class="info-section">
+            <h3>📂 डाटा तयार गर्ने विधि (CSV to JSON Guide)</h3>
+            <p style="margin-bottom: 20px; color: #64748B;">प्रणालीमा डाटा प्रविष्ट गर्नका लागि तपाईँको एक्सेल वा CSV फाइललाई JSON फर्म्याटमा परिवर्तन गर्न यी चरणहरू पालना गर्नुहोस्:</p>
+            
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-number">१</div>
+                    <h4>एक्सेल तयार गर्नुहोस्</h4>
+                    <p>आफ्नो कर्मचारी विवरणलाई Excel मा मिलाउनुहोस् र <b>.csv</b> फर्म्याटमा सेभ गर्नुहोस्।</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">२</div>
+                    <h4>कन्भर्टर खोल्नुहोस्</h4>
+                    <p>अनलाइन कन्भर्टर <a href="https://csvjson.com/csv2json" target="_blank" class="link-text">csvjson.com</a> खोल्नुहोस्।</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">३</div>
+                    <h4>फाइल अपलोड</h4>
+                    <p>आफ्नो CSV फाइल अपलोड गर्नुहोस् वा डाटा कोठामा कपि-पेस्ट गर्नुहोस्।</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">४</div>
+                    <h4>JSON कपी गर्नुहोस्</h4>
+                    <p>परिवर्तन भएको <b>JSON</b> कोडलाई कपी गरी यस प्रणालीको इनपुट बक्समा पेस्ट गर्नुहोस्।</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© २०८२ | <b>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</b> | सर्वाधिकार सुरक्षित</p>
+        <p>प्रणाली विकासकर्ता: 
+            <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" class="footer-link">
+                Bibek Rai (विवेक राई)
+            </a>
+        </p>
+    </footer>
+
+</body>
+</html>

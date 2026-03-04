@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nepal Tax Calculator - आ.ब. २०८२/८३</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Annapurna+SIL:wght@400;700&family=Yatra+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a6b;
+    --primary-light: #2d5fa6;
+    --accent: #c8102e;
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --border: #dde3ee;
+    --text: #1e2a3a;
+    --muted: #6b7a96;
+    --success: #1a7a4a;
+    --result-bg: #eef4ff;
+    --highlight: #fff8e1;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Annapurna SIL', 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .header-emblem {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-emblem img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
+  }
+
+  .header-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'Yatra One', serif;
+    letter-spacing: 0.4px;
+    line-height: 1.2;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  }
+
+  .header-text p {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Yatra One', serif;
+    white-space: nowrap;
+  }
+
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 20px;
+  }
+
+  .form-panel { display: flex; flex-direction: column; gap: 16px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .card-header {
+    background: var(--primary);
+    color: white;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Yatra One', serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-header .icon { font-size: 16px; }
+
+  .card-body { padding: 16px 18px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+  input[type=text], input[type=number], select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: var(--text);
+    background: #fff;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(45,95,166,0.12);
+  }
+
+  input[readonly] {
+    background: #f8f9fc;
+    color: var(--muted);
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 12px 0;
+  }
+
+  .sub-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    padding-left: 2px;
+    font-style: italic;
+  }
+
+  .inline-calc {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .inline-calc span { color: var(--primary); font-weight: 600; }
+
+  /* Results Panel */
+  .result-panel { position: sticky; top: 20px; }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+
+  .result-card .card-header {
+    background: linear-gradient(135deg, #1a3a6b, #2d5fa6);
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+
+  .result-body { padding: 0; }
+
+  .result-section {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-section:last-child { border-bottom: none; }
+
+  .result-title {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Yatra One', serif;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 3px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed #eee;
+  }
+
+  .result-row:last-child { border-bottom: none; }
+
+  .result-row .label { color: var(--muted); }
+  .result-row .value { font-weight: 600; color: var(--text); }
+
+  .result-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 18px;
+    background: var(--result-bg);
+    border-top: 2px solid var(--primary);
+  }
+
+  .result-total .label { font-size: 13px; font-weight: 600; font-family: 'Yatra One', serif; }
+  .result-total .value { font-size: 18px; font-weight: 800; font-family: 'Yatra One', serif; color: var(--primary); }
+
+  .tax-highlight {
+    background: #fff3e0;
+    border-top: 2px solid #ff9800;
+  }
+
+  .tax-highlight .value { color: var(--accent); font-size: 22px; }
+
+  .slab-table { width: 100%; font-size: 12px; }
+  .slab-table th {
+    background: #f0f4ff;
+    padding: 5px 8px;
+    text-align: left;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .slab-table td { padding: 4px 8px; border-bottom: 1px solid #f0f4ff; }
+  .slab-table tr.active-slab { background: #fff8e1; font-weight: 600; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .pill-red { background: #ffe0e0; color: var(--accent); }
+  .pill-green { background: #e0f7ea; color: var(--success); }
+  .pill-blue { background: #e0ecff; color: var(--primary); }
+
+  .note-box {
+    background: var(--highlight);
+    border-left: 3px solid #f59e0b;
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    font-size: 11px;
+    color: #856404;
+    margin-top: 8px;
+  }
+
+  .calc-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Yatra One', serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 4px;
+  }
+
+  .calc-btn:hover { background: var(--primary-light); }
+
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 880px) {
+    .main { grid-template-columns: 1fr; }
+    .result-panel { position: static; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 520px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .header-text h1 { font-size: 15px; }
+  }
+
+  /* ── PRINT LAYOUT ───────────────────────────────────── */
+  #print-area {
+    display: none;
+  }
+
+  @media print {
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm 10mm 12mm;
+    }
+
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    body > *:not(#print-area) { display: none !important; }
+
+    #print-area {
+      display: block !important;
+      font-family: 'Annapurna SIL', 'Segoe UI', Arial, sans-serif;
+      font-size: 8.5pt;
+      color: #000;
+      width: 100%;
+    }
+
+    .p-header {
+      text-align: center;
+      border-bottom: 2px solid #1a3a6b;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .p-header-logo {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+
+    .p-header-text { text-align: left; }
+
+    .p-header h1 { font-size: 12pt; font-weight: 800; font-family: 'Yatra One', serif; color: #1a3a6b; margin: 0; }
+    .p-header h2 { font-size: 9.5pt; font-weight: 700; font-family: 'Yatra One', serif; color: #c8102e; margin: 2px 0 0; }
+    .p-header p  { font-size: 7.5pt; color: #555; margin: 2px 0 0; }
+
+    .p-date {
+      text-align: right;
+      font-size: 7.5pt;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .p-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 5px;
+    }
+
+    .p-box {
+      border: 1px solid #bbb;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .p-box-title {
+      background: #1a3a6b;
+      color: white;
+      font-size: 7.5pt;
+      font-weight: 700;
+      font-family: 'Yatra One', serif;
+      padding: 2px 6px;
+    }
+
+    .p-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5pt;
+    }
+
+    .p-table th {
+      background: #e8edf7;
+      padding: 2px 5px;
+      font-weight: 700;
+      border-bottom: 1px solid #bbb;
+      text-align: left;
+      font-size: 7pt;
+    }
+
+    .p-table td {
+      padding: 1.8px 5px;
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
+    }
+
+    .p-table tr:last-child td { border-bottom: none; }
+
+    .p-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .p-table .total-row td {
+      background: #e8edf7;
+      font-weight: 700;
+      border-top: 1.5px solid #1a3a6b;
+    }
+
+    .p-table .highlight-row td {
+      background: #fff3e0;
+      font-weight: 700;
+    }
+
+    .p-table .tax-row td {
+      background: #fce8e8;
+      font-weight: 800;
+      font-size: 8.5pt;
+    }
+
+    .p-table .slab-active td { background: #fffbea; font-weight: 700; }
+
+    .p-two-col { grid-column: span 2; }
+
+    .p-summary-box {
+      border: 2px solid #1a3a6b;
+      border-radius: 4px;
+      padding: 5px 10px;
+      margin-top: 5px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #f0f4ff;
+    }
+
+    .p-summary-item { text-align: center; }
+    .p-summary-item .s-label { font-size: 7pt; color: #555; }
+    .p-summary-item .s-val   { font-size: 11pt; font-weight: 800; color: #1a3a6b; }
+    .p-summary-item .s-val.red { color: #c8102e; }
+    .p-summary-item .s-val.green { color: #1a7a4a; }
+
+    .p-divider { border: none; border-top: 1px solid #ddd; margin: 4px 0; }
+
+    .p-note {
+      font-size: 6.5pt;
+      color: #666;
+      border-left: 3px solid #f59e0b;
+      padding: 2px 6px;
+      background: #fffdf0;
+      margin-top: 4px;
+    }
+
+    .p-footer {
+      margin-top: 6px;
+      border-top: 1px solid #bbb;
+      padding-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 6.5pt;
+      color: #777;
+    }
+
+    .p-sign {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7pt;
+    }
+
+    .p-sign-box {
+      border-top: 1px solid #333;
+      width: 120px;
+      text-align: center;
+      padding-top: 2px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     PRINT AREA — only visible during print
+     ═══════════════════════════════════════════════════════ -->
+<div id="print-area"></div>
+
+<header>
+  <div class="header-inner">
+    <div class="header-emblem"> <a href="index.html">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Emblem_of_Nepal.svg" alt="Emblem of Nepal" /></a>
+    </div>
+    <div class="header-text">
+      <p style="font-size:11px; opacity:0.75; margin:0; font-family:'Annapurna SIL',sans-serif; letter-spacing:0.5px;">नेपाल सरकार (Government of Nepal)</p>
+      <h1>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</h1>
+      <p style="font-size:11px; opacity:0.8; margin:2px 0 0; font-family:'Annapurna SIL',sans-serif;">आयकर गणना प्रणाली &nbsp;|&nbsp; Tax Calculation of Income from Employment &nbsp;|&nbsp; आ.ब. २०८२/८३</p>
+    </div>
+    <div class="badge">आ.ब. २०८२/८३</div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Left: Form -->
+  <div class="form-panel">
+
+    <!-- Personal Info -->
+    <div class="card">
+      <div class="card-header"><span class="icon">👤</span> व्यक्तिगत विवरण (Personal Details)</div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field"><label>नामः (Name)</label><input type="text" id="name" placeholder="पूरा नाम"></div>
+          <div class="field"><label>पान नं. (PAN No.)</label><input type="text" id="pan" placeholder="PAN Number"></div>
+          <div class="field"><label>पदः (Designation)</label><input type="text" id="designation" placeholder="जस्तै: उप-सचिव"></div>
+          <div class="field"><label>सेवाः (Service)</label><input type="text" id="service" placeholder="जस्तै: शिक्षा"></div>
+        </div>
+        <hr class="divider">
+        <div class="grid-3">
+          <div class="field">
+            <label>लिङ्गः (Gender)</label>
+            <select id="gender" onchange="calculate()">
+              <option value="male">पुरुष (Male)</option>
+              <option value="female">महिला (Female)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>पारिवारिक अवस्था (Marital Status)</label>
+            <select id="marital" onchange="calculate()">
+              <option value="single">एकल (Single)</option>
+              <option value="couple">दम्पती (Couple)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>अपाङ्गता (Disability)</label>
+            <select id="disability" onchange="calculate()">
+              <option value="no">अपाङ्ग होइन</option>
+              <option value="yes">अपाङ्ग हो</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>दुर्गम क्षेत्र (Remote Area)</label>
+            <select id="remote_cat" onchange="calculate()">
+              <option value="0">अन्य (Other)</option>
+              <option value="1">क — 50,000</option>
+              <option value="2">ख — 40,000</option>
+              <option value="3">ग — 30,000</option>
+              <option value="4">घ — 20,000</option>
+              <option value="5">ङ — 10,000</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>बासिन्दा (Residency)</label>
+            <select id="residency" onchange="calculate()">
+              <option value="resident">बासिन्दा (Resident)</option>
+              <option value="non-resident">गैरबासिन्दा (Non-Resident)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>निवृत्तिभरण कोष (Pension Fund)</label>
+            <select id="pension_deduct" onchange="calculate()">
+              <option value="no">कट्टी नहुने</option>
+              <option value="yes">कट्टी हुने (6%)</option>
+            </select>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="grid-2">
+          <div class="field">
+            <label>चाडपर्व महिना (Festival Month)</label>
+            <select id="festival_month" onchange="calculate()">
+              <option value="1">बैशाख</option><option value="2">जेठ</option>
+              <option value="3">आषाढ</option><option value="4">श्रावण</option>
+              <option value="5">भाद्र</option><option value="6" selected>आश्विन</option>
+              <option value="7">कार्तिक</option><option value="8">मंसिर</option>
+              <option value="9">पौष</option><option value="10">माघ</option>
+              <option value="11">फाल्गुन</option><option value="12">चैत्र</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>ग्रेड वृद्धि महिना (Grade Increment Month)</label>
+            <select id="grade_month" onchange="calculate()">
+              <option value="1">बैशाख</option><option value="2">जेठ</option>
+              <option value="3">आषाढ</option><option value="4" selected>श्रावण</option>
+              <option value="5">भाद्र</option><option value="6">आश्विन</option>
+              <option value="7">कार्तिक</option><option value="8">मंसिर</option>
+              <option value="9">पौष</option><option value="10">माघ</option>
+              <option value="11">फाल्गुन</option><option value="12">चैत्र</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Details -->
+    <div class="card">
+      <div class="card-header"><span class="icon">💰</span> रोजगारीको आय विवरण (Income from Employment)</div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>मासिक तलव रु. (Monthly Salary)</label>
+            <input type="number" id="monthly_salary" value="48737" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>प्रविधिक ग्रेड मासिक रु. (Technical Grade/Month)</label>
+            <input type="number" id="tech_grade" value="0" oninput="calculate()">
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="sub-label">📊 ग्रेड विवरण (Grade Details) — ग्रेड = ग्रेड संख्या × प्रति ग्रेड दर</div>
+        <div class="grid-3">
+          <div class="field">
+            <label>ग्रेड संख्या (Grade Count)</label>
+            <input type="number" id="grade_count" value="8" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>प्रति ग्रेड दर रु. (Rate per Grade Step)</label>
+            <input type="number" id="grade_rate" value="1625" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>मासिक ग्रेड (Monthly Grade) रु.</label>
+            <input type="number" id="monthly_grade" readonly value="13000">
+          </div>
+        </div>
+        <div class="note-box">ग्रेड वृद्धि हुने महिना र वृद्धि हुनु अगाडीको महिना स्वतः गणना हुनेछ।</div>
+
+        <hr class="divider">
+        <div class="sub-label">🧮 स्वतः गणना — ग्रेड वृद्धि महिनाको आधारमा</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>ग्रेड वृद्धि अगाडीको महिना</label>
+            <input type="number" id="months_before" readonly>
+          </div>
+          <div class="field">
+            <label>ग्रेड वृद्धि पछीको महिना</label>
+            <input type="number" id="months_after" readonly>
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="sub-label">🎉 भत्ता तथा सुविधाहरु (Allowances & Benefits)</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>महंगी भत्ता मासिक रु. (Dearness Allowance/Month)</label>
+            <input type="number" id="da_monthly" value="5000" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>पोषाक भत्ता वार्षिक रु. (Uniform Allowance/Year)</label>
+            <input type="number" id="uniform_allowance" value="10000" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>वीमा सरकारी मासिक रु. (Govt Insurance/Month)</label>
+            <input type="number" id="govt_insurance" value="400" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>दुर्गम क्षेत्र भत्ता मासिक रु. (Remote Allowance/Month)</label>
+            <input type="number" id="remote_allowance" value="0" oninput="calculate()">
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>अन्य भत्ता वार्षिक रु. (Other Allowances/Year)</label>
+            <input type="number" id="other_allowances" value="0" oninput="calculate()">
+          </div>
+        </div>
+
+        <hr class="divider">
+        <div class="sub-label">🏦 सञ्चय / निवृत्तिभरण कोष (Provident / Pension Fund)</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>सञ्चय कोष दर % (PF Rate - Employee %)</label>
+            <input type="number" id="pf_rate" value="10" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>नागरिक लगानी कोष मासिक रु. (NIF/Month)</label>
+            <input type="number" id="nif_monthly" value="10000" oninput="calculate()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tax Exemptions -->
+    <div class="card">
+      <div class="card-header"><span class="icon">🛡️</span> कर छुट सुविधाहरु (Tax Exemptions)</div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>बीमा व्यक्तिगत वार्षिक रु. (Personal Insurance/Year) <span style="color:#c8102e">max 40,000</span></label>
+            <input type="number" id="personal_insurance" value="0" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>स्वास्थ्य बीमा वार्षिक रु. (Health Insurance/Year) <span style="color:#c8102e">max 20,000</span></label>
+            <input type="number" id="health_insurance" value="0" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>निजी भवन बीमा वार्षिक रु. (Home Insurance/Year) <span style="color:#c8102e">max 5,000</span></label>
+            <input type="number" id="home_insurance" value="0" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>बैदेशिक भत्ता वार्षिक रु. (Foreign Allowance/Year) <span style="color:#c8102e">75% exempt</span></label>
+            <input type="number" id="foreign_allowance" value="0" oninput="calculate()">
+          </div>
+          <div class="field" style="grid-column: span 2;">
+            <label>अन्य छुट सुविधा वार्षिक रु. (Other Exemptions/Year)</label>
+            <input type="number" id="other_exemptions" value="0" oninput="calculate()">
+          </div>
+        </div>
+        <div class="note-box">
+          💡 औषधी उपचार खर्च: वास्तविक खर्चको १५% वा रु. १,५०० जुन घटी हुन्छ त्यो करमा मिलान गर्न सकिन्छ।
+        </div>
+      </div>
+    </div>
+
+    <!-- Medical Adjustment -->
+    <div class="card">
+      <div class="card-header"><span class="icon">🏥</span> औषधी उपचार खर्च (Medical Expense Adjustment)</div>
+      <div class="card-body">
+        <div class="grid-2">
+          <div class="field">
+            <label>स्वीकृत औषधी उपचार खर्च रु. (Approved Medical Expenses)</label>
+            <input type="number" id="medical_expense" value="0" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>कर मिलान रकम (Tax Adjustment Amount)</label>
+            <input type="number" id="medical_adjustment" readonly value="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Right: Results Panel -->
+  <div class="result-panel">
+    <div class="result-card">
+      <div class="card-header" style="font-size:15px; padding:16px 18px;">
+        <span class="icon">📊</span>&nbsp; कर गणना परिणाम (Tax Calculation Results)
+      </div>
+      <div class="result-body">
+
+        <!-- Assessable Income -->
+        <div class="result-section">
+          <div class="result-title">क — निर्धारणयोग्य आय (Assessable Income)</div>
+          <div class="result-row"><span class="label">मासिक तलव × १२</span><span class="value" id="r_salary">0</span></div>
+          <div class="result-row"><span class="label">ग्रेड आय (Grade Income)</span><span class="value" id="r_grade_income">0</span></div>
+          <div class="result-row"><span class="label">प्रविधिक ग्रेड × १२</span><span class="value" id="r_tech_income">0</span></div>
+          <div class="result-row"><span class="label">चाडपर्व भत्ता</span><span class="value" id="r_festival">0</span></div>
+          <div class="result-row"><span class="label">वीमा सरकारी × १२</span><span class="value" id="r_govt_ins">0</span></div>
+          <div class="result-row"><span class="label">महंगी भत्ता × १२</span><span class="value" id="r_da">0</span></div>
+          <div class="result-row"><span class="label">पोषाक भत्ता</span><span class="value" id="r_uniform">0</span></div>
+          <div class="result-row"><span class="label">दुर्गम भत्ता × १२</span><span class="value" id="r_remote">0</span></div>
+          <div class="result-row"><span class="label">अन्य भत्ता</span><span class="value" id="r_other_allow">0</span></div>
+          <div class="result-row"><span class="label">सञ्चय कोष (रोजगारदाता)</span><span class="value" id="r_pf_employer">0</span></div>
+          <div class="result-row"><span class="label">निवृत्तिभरण कोष (रोजगारदाता)</span><span class="value" id="r_pension_employer">0</span></div>
+        </div>
+
+        <div class="result-total">
+          <span class="label">[क] जम्मा निर्धारणयोग्य आय</span>
+          <span class="value" id="r_total_assessable">रु. 0</span>
+        </div>
+
+        <!-- Deductions -->
+        <div class="result-section">
+          <div class="result-title">ख — कर छुट (Deductions)</div>
+          <div class="result-row"><span class="label">अवकाश कोष छुट (PF+NIF)</span><span class="value" id="r_pf_exemption">0</span></div>
+          <div class="result-row"><span class="label">दुर्गम भत्ता छुट</span><span class="value" id="r_remote_exempt">0</span></div>
+          <div class="result-row"><span class="label">बीमा सरकारी (×२ सीमा 40K)</span><span class="value" id="r_govt_ins_exempt">0</span></div>
+          <div class="result-row"><span class="label">बीमा व्यक्तिगत (सीमा 40K)</span><span class="value" id="r_personal_ins">0</span></div>
+          <div class="result-row"><span class="label">स्वास्थ्य बीमा (सीमा 20K)</span><span class="value" id="r_health_ins">0</span></div>
+          <div class="result-row"><span class="label">निजी भवन बीमा (सीमा 5K)</span><span class="value" id="r_home_ins">0</span></div>
+          <div class="result-row"><span class="label">बैदेशिक भत्ता (75%)</span><span class="value" id="r_foreign">0</span></div>
+          <div class="result-row"><span class="label">अपाङ्गता छुट</span><span class="value" id="r_disability">0</span></div>
+          <div class="result-row"><span class="label">अन्य छुट</span><span class="value" id="r_other_exempt">0</span></div>
+        </div>
+
+        <div class="result-total">
+          <span class="label">[ख] जम्मा कट्टी</span>
+          <span class="value" id="r_total_deduction">रु. 0</span>
+        </div>
+
+        <!-- Net & Taxable -->
+        <div class="result-section">
+          <div class="result-title">ग, घ, ङ — खुद र करयोग्य आय</div>
+          <div class="result-row"><span class="label">[ग] खुद आय (ग = क − ख)</span><span class="value" id="r_net_income">0</span></div>
+          <div class="result-row"><span class="label">[घ] छुट सीमा (Threshold)</span><span class="value" id="r_threshold">0</span></div>
+          <div class="result-row" style="background:#fff8e1;padding:5px 0;border-radius:4px;">
+            <span class="label"><strong>[ङ] करयोग्य आय (Taxable Income)</strong></span>
+            <span class="value" id="r_taxable" style="color:#d97706;">0</span>
+          </div>
+        </div>
+
+        <!-- Tax Slabs -->
+        <div class="result-section">
+          <div class="result-title">च — कर गणना (Tax Slabs)</div>
+          <table class="slab-table">
+            <thead>
+              <tr><th>स्ल्याव</th><th>दर</th><th>रकम</th><th>वार्षिक कर</th><th>मासिक कर</th></tr>
+            </thead>
+            <tbody id="slab_rows">
+              <tr><td colspan="5" style="text-align:center;color:#aaa;padding:10px;">— गणना नभएको —</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Final Tax -->
+        <div class="result-section">
+          <div class="result-title">अन्तिम कर (Final Tax)</div>
+          <div class="result-row"><span class="label">जम्मा वार्षिक कर</span><span class="value" id="r_gross_tax">0</span></div>
+          <div class="result-row" id="female_discount_row" style="display:none"><span class="label">महिला छुट (−10%)</span><span class="value" id="r_female_discount" style="color:green;">0</span></div>
+          <div class="result-row"><span class="label">औषधी उपचार मिलान</span><span class="value" id="r_medical_adj" style="color:green;">0</span></div>
+        </div>
+
+        <!-- Monthly Tax Breakdown -->
+        <div class="result-section" style="background:#f7f9ff;">
+          <div class="result-title">मासिक कर विवरण (Monthly Tax Breakdown)</div>
+          <div class="result-row">
+            <span class="label">🔵 सामाजिक सुरक्षा कर मासिक<br><span style="font-size:10px;color:#aaa;">(Social Security Tax / Month)</span></span>
+            <span class="value" id="r_sst_monthly" style="color:#1a3a6b;">0</span>
+          </div>
+          <div class="result-row">
+            <span class="label">🟠 पारिश्रमिक कर मासिक<br><span style="font-size:10px;color:#aaa;">(Wage/Income Tax / Month)</span></span>
+            <span class="value" id="r_wage_monthly" style="color:#c47000;">0</span>
+          </div>
+        </div>
+
+        <div class="result-total tax-highlight">
+          <div>
+            <div style="font-size:11px;color:#666;font-weight:500;">वार्षिक तिर्नुपर्ने कर</div>
+            <div class="label" style="font-size:15px;">Annual Tax Payable</div>
+          </div>
+          <span class="value" id="r_annual_tax">रु. 0</span>
+        </div>
+
+        <div class="result-total" style="background:#e8f5e9; border-top:2px solid #4caf50;">
+          <div>
+            <div style="font-size:11px;color:#666;font-weight:500;">मासिक TDS (SST + पारिश्रमिक)</div>
+            <div class="label" style="font-size:15px;">Monthly TDS</div>
+          </div>
+          <span class="value" style="color:#2e7d32;font-size:20px;" id="r_monthly_tds">रु. 0</span>
+        </div>
+
+        <div style="padding: 12px 18px;">
+          <div class="note-box" id="result_note" style="font-size:12px; line-height:1.6;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calculate()">🔄 पुनः गणना गर्नुहोस् (Recalculate)</button>
+  <button class="calc-btn export-btn" onclick="exportCSV()" style="margin-top:10px; background:#1a7a4a;">📥 CSV निर्यात गर्नुहोस् (Export CSV — UTF-8)</button>
+  <button class="calc-btn" onclick="printReport()" style="margin-top:10px; background:#7b2d8b;">🖨️ प्रिन्ट गर्नुहोस् (Print Report)</button>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>⚠️ सावधानी:</strong> यो कर गणना सहायकको रूपमा मात्र प्रयोग गर्नुहोस् । वास्तविक कर दायित्व सुनिश्चित गर्न आफ्नो कार्यालय लेखा शाखा वा कर परामर्शदाता सम्पर्क गर्नुहोस् ।<br>
+  <em>Please use this calculator with caution! Take advice from your tax consultant. | आ.ब. २०८२/८३ (FY 2082-83)</em>
+  <div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); display:flex; justify-content:center; gap:6px; align-items:center; flex-wrap:wrap;">
+        <p>© २०८२ | <b>शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय</b> | सर्वाधिकार सुरक्षित</p>
+    <span>📊 Excel template by <strong style="color:var(--primary);">Prakash Gautam</strong></span>
+    <span style="color:#ccc;">|</span>
+    <span>💻 Web app by <strong style="color:var(--primary);"><a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" class="footer-link">Bibek Rai (विवेक राई)</a></strong>
+	</span>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// Helper: Format number as रु. X,XX,XXX.XX (Nepali)
+// ─────────────────────────────────────────────────────────
+function fmt(n, prefix = 'रु. ') {
+  if (isNaN(n) || n === null || n === undefined) return prefix + '0';
+  const abs = Math.abs(n);
+  const neg = n < 0;
+  const str = abs.toFixed(2);
+  const [intPart, dec] = str.split('.');
+  let res = '';
+  let len = intPart.length;
+  if (len <= 3) {
+    res = intPart;
+  } else {
+    res = intPart.slice(-3);
+    let rem = intPart.slice(0, -3);
+    while (rem.length > 2) {
+      res = rem.slice(-2) + ',' + res;
+      rem = rem.slice(0, -2);
+    }
+    if (rem) res = rem + ',' + res;
+  }
+  const final = (neg ? '−' : '') + prefix + res + (parseFloat(dec) > 0 ? '.' + dec : '');
+  return final;
+}
+
+function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function sel(id) { return document.getElementById(id).value; }
+function set(id, v) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.tagName === 'INPUT') el.value = typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(2)) : v;
+  else el.textContent = v;
+}
+function setFmt(id, n, prefix = 'रु. ') { set(id, fmt(n, prefix)); }
+
+// ─────────────────────────────────────────────────────────
+// Grade increment → months before / after
+// Nepali FY starts Shrawan (calendar month 4)
+// ─────────────────────────────────────────────────────────
+function getGradeMonths(gradeMonth) {
+  // FY position: Shrawan(4)=1, ..., Ashadh(3)=12
+  const fy = ((gradeMonth - 4 + 12) % 12); // 0-based FY month (0 = Shrawan)
+  const monthsBefore = fy;      // months in FY before increment
+  const monthsAfter = 12 - fy;  // months after (including increment month)
+  return { monthsBefore, monthsAfter };
+}
+
+// ─────────────────────────────────────────────────────────
+// Tax slab calculation
+// ─────────────────────────────────────────────────────────
+// For Nepal FY 2082-83:
+// The tax structure is:
+//   SST on min(net_income, threshold) at 1%
+//   Progressive tax on taxable_income (net - threshold) if > 0
+//      0-200000: 10%,  200001-500000: 20%, 500001-1500000: 30%
+//      1500001-4500000: 36%, above 4500000: 39%
+
+function calcTax(netIncome, threshold, isCoupleBonus) {
+  // SST (Social Security Tax) at 1%
+  const sstBase = Math.min(netIncome, threshold);
+  const sst = sstBase * 0.01;
+
+  // Taxable income above threshold
+  const taxableIncome = Math.max(0, netIncome - threshold);
+
+  // Progressive slabs on taxable income
+  const slabs = [
+    { label: 'थप २,००,०००', limit: 200000, rate: 0.10 },
+    { label: 'थप ३,००,०००', limit: 300000, rate: 0.20 },
+    { label: 'थप १०,००,०००', limit: 1000000, rate: 0.30 },
+    { label: 'थप ३०,००,०००', limit: 3000000, rate: 0.36 },
+    { label: 'बाँकी', limit: Infinity, rate: 0.39 },
+  ];
+
+  let remaining = taxableIncome;
+  const slabDetails = [];
+  let progressiveTax = 0;
+
+  for (const s of slabs) {
+    if (remaining <= 0) break;
+    const taxable = Math.min(remaining, s.limit);
+    const tax = taxable * s.rate;
+    slabDetails.push({ label: s.label, rate: s.rate, amount: taxable, tax, active: taxable > 0 });
+    progressiveTax += tax;
+    remaining -= taxable;
+  }
+
+  return { sst, sstBase, taxableIncome, slabDetails, progressiveTax, grossTax: sst + progressiveTax };
+}
+
+// ─────────────────────────────────────────────────────────
+// MAIN CALCULATION
+// ─────────────────────────────────────────────────────────
+function calculate() {
+  const gender = sel('gender');
+  const marital = sel('marital');
+  const disabilityYes = sel('disability') === 'yes';
+  const remoteCat = parseInt(sel('remote_cat'));
+  const residency = sel('residency');
+  const pensionDeductYes = sel('pension_deduct') === 'yes';
+
+  const gradeMonth = parseInt(sel('grade_month'));
+  const festivalMonth = parseInt(sel('festival_month'));
+
+  const monthlySalary = val('monthly_salary');
+  const gradeCount = val('grade_count');
+  const gradeRate = val('grade_rate');
+  const techGrade = val('tech_grade');
+  const monthlyGradeAmt = gradeCount * gradeRate;
+
+  // Update computed grade display
+  document.getElementById('monthly_grade').value = monthlyGradeAmt.toFixed(2);
+
+  const { monthsBefore, monthsAfter } = getGradeMonths(gradeMonth);
+  document.getElementById('months_before').value = monthsBefore;
+  document.getElementById('months_after').value = monthsAfter;
+
+  // Grade income
+  const gradeIncomeBefore = monthlyGradeAmt * monthsBefore;
+  const gradeIncomeAfter = monthlyGradeAmt * monthsAfter;
+  const totalGradeIncome = gradeIncomeBefore + gradeIncomeAfter;
+
+  // Festival bonus: at festival time, salary + grade (check if festival is before/after increment)
+  const festFyPos = (festivalMonth - 4 + 12) % 12;
+  const gradeFyPos = (gradeMonth - 4 + 12) % 12;
+  // If festival FY position is before grade increment FY position → festival uses grade at that time (same as before increment)
+  const festivalGrade = monthlyGradeAmt; // grade count stays same, only timing matters
+  const festivalBonus = (monthlySalary + festivalGrade);
+
+  const techGradeIncome = techGrade * 12;
+  const daIncome = val('da_monthly') * 12;
+  const uniformIncome = val('uniform_allowance');
+  const govtInsIncome = val('govt_insurance') * 12;
+  const remoteAllowIncome = val('remote_allowance') * 12;
+  const otherAllowIncome = val('other_allowances');
+
+  // PF rate (employee share): same as employer share
+  const pfRate = val('pf_rate') / 100;
+
+  // PF employer contribution to income:
+  // employer contributes same % of (salary + grade) each month
+  const salaryBeforeInc = monthlySalary; // salary same throughout
+  const pfEmployerBefore = salaryBeforeInc * pfRate * monthsBefore +
+                           (salaryBeforeInc + monthlyGradeAmt) * pfRate * monthsBefore * 0; 
+  // Simplified: PF base = salary + grade for that period
+  const pfEmployerMonth = (monthlySalary + monthlyGradeAmt) * pfRate;
+  const pfEmployerIncomeBefore = pfEmployerMonth * monthsBefore;
+  const pfEmployerIncomeAfter = pfEmployerMonth * monthsAfter;
+  const pfEmployerTotalIncome = pfEmployerIncomeBefore + pfEmployerIncomeAfter;
+
+  // Pension (6% of salary+grade) if applicable
+  const pensionRate = 0.06;
+  const pensionEmployerMonthly = pensionDeductYes ? (monthlySalary + monthlyGradeAmt) * pensionRate : 0;
+  const pensionEmployerIncome = pensionDeductYes ? (pensionEmployerMonthly * 12) : 0;
+
+  // Salary × 12
+  const salaryAnnual = monthlySalary * 12;
+
+  // Total Assessable Income [क]
+  const totalAssessable = salaryAnnual + totalGradeIncome + techGradeIncome
+    + festivalBonus + govtInsIncome + daIncome + uniformIncome
+    + remoteAllowIncome + otherAllowIncome
+    + pfEmployerTotalIncome + pensionEmployerIncome;
+
+  // ── DEDUCTIONS ──────────────────────────────────────────
+
+  // Actual PF contribution (employee × 2 = both sides) annual
+  const pfActualEmployee = pfEmployerMonth * 12; // employee = same rate
+  const pfActualBoth = pfActualEmployee * 2;  // employee + employer
+
+  // NIF (Citizens Investment Trust)
+  const nifMonthly = val('nif_monthly');
+  const nifAnnual = nifMonthly * 12;
+
+  // Pension fund employee contribution
+  const pensionEmployee = pensionDeductYes ? (monthlySalary + monthlyGradeAmt) * pensionRate * 12 : 0;
+
+  // Total actual retirement contribution
+  const actualRetirementContrib = pfActualBoth + nifAnnual + pensionEmployee;
+
+  // PF exemption: min(500000, assessable/3, actual)
+  const pfExemptionLimit = Math.min(500000, totalAssessable / 3, actualRetirementContrib);
+
+  // Remote area exemption
+  const remoteMaxByCategory = [0, 50000, 40000, 30000, 20000, 10000];
+  const remoteExemption = remoteMaxByCategory[remoteCat] || 0;
+
+  // Govt insurance: both employee+employer × 12, max 40000
+  const govtInsExempt = Math.min(val('govt_insurance') * 2 * 12, 40000);
+
+  // Personal insurance: max 40000
+  const personalInsExempt = Math.min(val('personal_insurance'), 40000);
+
+  // Health insurance: max 20000
+  const healthInsExempt = Math.min(val('health_insurance'), 20000);
+
+  // Home insurance: max 5000
+  const homeInsExempt = Math.min(val('home_insurance'), 5000);
+
+  // Foreign allowance: 75%
+  const foreignExempt = val('foreign_allowance') * 0.75;
+
+  // Disability: 50% of base threshold
+  const baseThreshold = marital === 'couple' ? 600000 : 500000;
+  const disabilityExempt = disabilityYes ? baseThreshold * 0.5 : 0;
+
+  const otherExempt = val('other_exemptions');
+
+  const totalDeduction = pfExemptionLimit + remoteExemption + govtInsExempt
+    + personalInsExempt + healthInsExempt + homeInsExempt
+    + foreignExempt + disabilityExempt + otherExempt;
+
+  // ── NET & TAXABLE INCOME ────────────────────────────────
+  const netIncome = Math.max(0, totalAssessable - totalDeduction);
+  const threshold = baseThreshold;
+  const taxableIncome = Math.max(0, netIncome - threshold);
+
+  // ── TAX CALCULATION ─────────────────────────────────────
+  const { sst, sstBase, slabDetails, progressiveTax, grossTax } = calcTax(netIncome, threshold, marital === 'couple');
+
+  // Female discount: 10% off if female with employment income only
+  const isFemale = gender === 'female';
+  const femaleDiscount = isFemale ? grossTax * 0.10 : 0;
+
+  const taxAfterDiscount = grossTax - femaleDiscount;
+
+  // Medical adjustment
+  const medicalExpense = val('medical_expense');
+  const medicalAdj = Math.min(medicalExpense * 0.15, 1500);
+  document.getElementById('medical_adjustment').value = medicalAdj.toFixed(2);
+
+  const annualTax = Math.max(0, taxAfterDiscount - medicalAdj);
+  const monthlyTDS = annualTax / 12;
+
+  // ── UPDATE UI ───────────────────────────────────────────
+
+  setFmt('r_salary', salaryAnnual, '');
+  setFmt('r_grade_income', totalGradeIncome, '');
+  setFmt('r_tech_income', techGradeIncome, '');
+  setFmt('r_festival', festivalBonus, '');
+  setFmt('r_govt_ins', govtInsIncome, '');
+  setFmt('r_da', daIncome, '');
+  setFmt('r_uniform', uniformIncome, '');
+  setFmt('r_remote', remoteAllowIncome, '');
+  setFmt('r_other_allow', otherAllowIncome, '');
+  setFmt('r_pf_employer', pfEmployerTotalIncome, '');
+  setFmt('r_pension_employer', pensionEmployerIncome, '');
+  setFmt('r_total_assessable', totalAssessable, 'रु. ');
+
+  setFmt('r_pf_exemption', pfExemptionLimit, '');
+  setFmt('r_remote_exempt', remoteExemption, '');
+  setFmt('r_govt_ins_exempt', govtInsExempt, '');
+  setFmt('r_personal_ins', personalInsExempt, '');
+  setFmt('r_health_ins', healthInsExempt, '');
+  setFmt('r_home_ins', homeInsExempt, '');
+  setFmt('r_foreign', foreignExempt, '');
+  setFmt('r_disability', disabilityExempt, '');
+  setFmt('r_other_exempt', otherExempt, '');
+  setFmt('r_total_deduction', totalDeduction, 'रु. ');
+
+  setFmt('r_net_income', netIncome, '');
+  set('r_threshold', fmt(threshold, ''));
+  setFmt('r_taxable', taxableIncome, '');
+
+  // Slab table
+  const tbody = document.getElementById('slab_rows');
+  tbody.innerHTML = '';
+
+  // SST row
+  const sstRow = document.createElement('tr');
+  sstRow.className = sstBase > 0 ? 'active-slab' : '';
+  sstRow.innerHTML = `
+    <td>सामाजिक सुरक्षा कर</td>
+    <td>1%</td>
+    <td>${fmt(sstBase, '')}</td>
+    <td>${fmt(sst, '')}</td>
+    <td>${fmt(sst / 12, '')}</td>`;
+  tbody.appendChild(sstRow);
+
+  for (const s of slabDetails) {
+    if (s.amount > 0 || s.active) {
+      const tr = document.createElement('tr');
+      tr.className = s.active && s.amount > 0 ? 'active-slab' : '';
+      tr.innerHTML = `
+        <td>${s.label}</td>
+        <td>${(s.rate * 100).toFixed(0)}%</td>
+        <td>${fmt(s.amount, '')}</td>
+        <td>${fmt(s.tax, '')}</td>
+        <td>${fmt(s.tax / 12, '')}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  setFmt('r_gross_tax', sst + progressiveTax, '');
+
+  // Monthly SST and wage tax breakdown
+  const sstAfterDiscount = isFemale ? sst * 0.90 : sst;
+  const wageAfterDiscount = isFemale ? progressiveTax * 0.90 : progressiveTax;
+  // Apportion medical adj proportionally
+  const totalBeforeAdj = sstAfterDiscount + wageAfterDiscount;
+  const sstMonthly  = totalBeforeAdj > 0 ? ((sstAfterDiscount  - medicalAdj * (sstAfterDiscount / totalBeforeAdj)) / 12) : 0;
+  const wageMonthly = totalBeforeAdj > 0 ? ((wageAfterDiscount - medicalAdj * (wageAfterDiscount / totalBeforeAdj)) / 12) : 0;
+  setFmt('r_sst_monthly',  Math.max(0, sstMonthly),  'रु. ');
+  setFmt('r_wage_monthly', Math.max(0, wageMonthly), 'रु. ');
+
+  const femaleRow = document.getElementById('female_discount_row');
+  if (isFemale && femaleDiscount > 0) {
+    femaleRow.style.display = 'flex';
+    set('r_female_discount', '−' + fmt(femaleDiscount, ''));
+  } else {
+    femaleRow.style.display = 'none';
+  }
+
+  set('r_medical_adj', medicalAdj > 0 ? '−' + fmt(medicalAdj, '') : fmt(0, ''));
+  setFmt('r_annual_tax', annualTax, 'रु. ');
+  setFmt('r_monthly_tds', monthlyTDS, 'रु. ');
+
+  // Note
+  let notes = [];
+  if (isFemale) notes.push('✅ महिलाको पारिश्रमिक आयमा १०% कर छुट लागू भएको');
+  if (disabilityYes) notes.push('✅ अपाङ्ग व्यक्तिको लागि थप ' + fmt(disabilityExempt, '') + ' छुट लागू');
+  notes.push(`📌 अवकाश कोष छुट: रु. ${pfExemptionLimit.toFixed(2)} (min of रु.5,00,000 / कुल आयको १/३ / वास्तविक योगदान)`);
+  document.getElementById('result_note').innerHTML = notes.join('<br>');
+}
+
+// ─────────────────────────────────────────────────────────
+// PRINT REPORT — builds a compact single-page print layout
+// ─────────────────────────────────────────────────────────
+function printReport() {
+  calculate();
+
+  const g  = sel('gender');
+  const m  = sel('marital');
+  const dis = sel('disability') === 'yes';
+  const remoteCat = parseInt(sel('remote_cat'));
+  const pen = sel('pension_deduct') === 'yes';
+  const gradeMonth = parseInt(sel('grade_month'));
+  const festMonth  = parseInt(sel('festival_month'));
+  const { monthsBefore, monthsAfter } = getGradeMonths(gradeMonth);
+  const monthNames = ['','बैशाख','जेठ','आषाढ','श्रावण','भाद्र','आश्विन','कार्तिक','मंसिर','पौष','माघ','फाल्गुन','चैत्र'];
+  const remoteCatNames = ['अन्य','क','ख','ग','घ','ङ'];
+
+  const monthlySalary  = val('monthly_salary');
+  const gradeCount     = val('grade_count');
+  const gradeRate      = val('grade_rate');
+  const monthlyGrade   = gradeCount * gradeRate;
+  const techGrade      = val('tech_grade');
+  const daMonthly      = val('da_monthly');
+  const uniformAllow   = val('uniform_allowance');
+  const govtIns        = val('govt_insurance');
+  const remoteAllow    = val('remote_allowance');
+  const otherAllow     = val('other_allowances');
+  const pfRate         = val('pf_rate') / 100;
+  const nifMonthly     = val('nif_monthly');
+  const personalIns    = val('personal_insurance');
+  const healthIns      = val('health_insurance');
+  const homeIns        = val('home_insurance');
+  const foreignAllow   = val('foreign_allowance');
+  const otherExempt    = val('other_exemptions');
+  const medExpense     = val('medical_expense');
+  const medAdj         = val('medical_adjustment');
+
+  const pfEmpMonth   = (monthlySalary + monthlyGrade) * pfRate;
+  const festivalBonus= monthlySalary + monthlyGrade;
+  const salaryAnnual = monthlySalary * 12;
+  const gradeIncome  = monthlyGrade * (monthsBefore + monthsAfter);
+  const techIncome   = techGrade * 12;
+  const daAnnual     = daMonthly * 12;
+  const govtInsAnnual= govtIns * 12;
+  const remoteAnnual = remoteAllow * 12;
+  const pfEmpTotal   = pfEmpMonth * 12;
+  const pensionMonthly = pen ? (monthlySalary + monthlyGrade) * 0.06 : 0;
+  const pensionAnnual  = pensionMonthly * 12;
+
+  const totalAssessable = salaryAnnual + gradeIncome + techIncome + festivalBonus
+    + govtInsAnnual + daAnnual + uniformAllow + remoteAnnual + otherAllow
+    + pfEmpTotal + pensionAnnual;
+
+  const pfActualBoth   = pfEmpMonth * 2 * 12;
+  const nifAnnual      = nifMonthly * 12;
+  const pensionEmp     = pen ? pensionMonthly * 12 : 0;
+  const actualRetire   = pfActualBoth + nifAnnual + pensionEmp;
+  const pfExemption    = Math.min(500000, totalAssessable / 3, actualRetire);
+
+  const remoteMaxByCategory = [0, 50000, 40000, 30000, 20000, 10000];
+  const remoteExemption= remoteMaxByCategory[remoteCat] || 0;
+  const govtInsEx      = Math.min(govtIns * 2 * 12, 40000);
+  const personalInsEx  = Math.min(personalIns, 40000);
+  const healthInsEx    = Math.min(healthIns, 20000);
+  const homeInsEx      = Math.min(homeIns, 5000);
+  const foreignEx      = foreignAllow * 0.75;
+  const baseThreshold  = m === 'couple' ? 600000 : 500000;
+  const disabilityEx   = dis ? baseThreshold * 0.5 : 0;
+  const totalDeduction = pfExemption + remoteExemption + govtInsEx
+    + personalInsEx + healthInsEx + homeInsEx + foreignEx + disabilityEx + otherExempt;
+
+  const netIncome   = Math.max(0, totalAssessable - totalDeduction);
+  const threshold   = baseThreshold;
+  const taxableInc  = Math.max(0, netIncome - threshold);
+  const sstBase     = Math.min(netIncome, threshold);
+  const sst         = sstBase * 0.01;
+
+  const slabLimits = [200000, 300000, 1000000, 3000000, Infinity];
+  const slabRates  = [0.10, 0.20, 0.30, 0.36, 0.39];
+  const slabLabels = ['थप २,००,०००','थप ३,००,०००','थप १०,००,०००','थप ३०,००,०००','बाँकी'];
+  let rem = taxableInc, progTax = 0;
+  const slabRows = [];
+  for (let i = 0; i < slabLimits.length; i++) {
+    const amt = rem <= 0 ? 0 : Math.min(rem, slabLimits[i] === Infinity ? rem : slabLimits[i]);
+    const tax = amt * slabRates[i];
+    slabRows.push({ label: slabLabels[i], rate: (slabRates[i]*100)+'%', amount: amt, tax });
+    progTax += tax;
+    rem -= amt;
+  }
+  const grossTax   = sst + progTax;
+  const isFemale   = g === 'female';
+  const femaleDisc = isFemale ? grossTax * 0.10 : 0;
+  const annualTax  = Math.max(0, grossTax - femaleDisc - medAdj);
+  const monthlyTDS = annualTax / 12;
+
+  const f = (n) => n === 0 ? '—' : n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fi = (n) => n === 0 ? '—' : n.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+  // Get current date/time
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const printDateTime = `${dateStr} ${timeStr}`;
+
+  const nameVal = document.getElementById('name').value || '—';
+  const panVal  = document.getElementById('pan').value || '—';
+  const desig   = document.getElementById('designation').value || '—';
+  const service = document.getElementById('service').value || '—';
+
+  const slabHtml = slabRows.filter(s => s.amount > 0).map(s =>
+    `<tr class="slab-active"><td>${s.label}</td><td class="num">${s.rate}</td><td class="num">${f(s.amount)}</td><td class="num">${f(s.tax)}</td><td class="num">${f(s.tax/12)}</td></tr>`
+  ).join('');
+
+  const html = `
+    <div class="p-date">मुद्रण मिति (Print Date): <strong>${printDateTime}</strong></div>
+
+    <div class="p-header"><a href="index.html">
+      <img class="p-header-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/23/Emblem_of_Nepal.svg" alt="Emblem of Nepal" />
+      <div class="p-header-text"></a>
+        <h1>नेपाल सरकार शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय (Government of Nepal)</h1>
+        <h2>आ.ब.२०८२/८३ — रोजगारीको आयको कर गणना</h2>
+        <p>Tax Calculation of Income from Employment — FY 2082/83</p>
+      </div>
+    </div>
+
+    <!-- PERSONAL + INCOME IN TWO COLUMNS -->
+    <div class="p-grid">
+
+      <!-- LEFT: Personal Details -->
+      <div class="p-box">
+        <div class="p-box-title">👤 व्यक्तिगत विवरण (Personal Details)</div>
+        <table class="p-table">
+          <tr><td>नामः</td><td><strong>${nameVal}</strong></td><td>पान नं.:</td><td><strong>${panVal}</strong></td></tr>
+          <tr><td>पदः</td><td>${desig}</td><td>सेवाः</td><td>${service}</td></tr>
+          <tr><td>लिङ्गः</td><td>${g === 'female' ? 'महिला (Female)' : 'पुरुष (Male)'}</td><td>पारिवारिक:</td><td>${m === 'couple' ? 'दम्पती' : 'एकल'}</td></tr>
+          <tr><td>अपाङ्गता:</td><td>${dis ? 'अपाङ्ग हो' : 'होइन'}</td><td>दुर्गम:</td><td>${remoteCatNames[remoteCat]}</td></tr>
+          <tr><td>चाडपर्व:</td><td>${monthNames[festMonth]}</td><td>ग्रेड वृद्धि:</td><td>${monthNames[gradeMonth]}</td></tr>
+          <tr><td>निवृत्तिभरण:</td><td>${pen ? 'कट्टी हुने' : 'कट्टी नहुने'}</td><td>बासिन्दा:</td><td>${sel('residency') === 'resident' ? 'बासिन्दा' : 'गैरबासिन्दा'}</td></tr>
+        </table>
+      </div>
+
+      <!-- RIGHT: Summary box -->
+      <div class="p-box">
+        <div class="p-box-title">📊 सारांश (Summary)</div>
+        <table class="p-table">
+          <tr><td>जम्मा निर्धारणयोग्य आय [क]</td><td class="num"><strong>${f(totalAssessable)}</strong></td></tr>
+          <tr><td>जम्मा कट्टी [ख]</td><td class="num">${f(totalDeduction)}</td></tr>
+          <tr><td>खुद आय [ग = क − ख]</td><td class="num">${f(netIncome)}</td></tr>
+          <tr><td>छुट सीमा [घ]</td><td class="num">${f(threshold)}</td></tr>
+          <tr class="highlight-row"><td>करयोग्य आय [ङ]</td><td class="num">${f(taxableInc)}</td></tr>
+          <tr><td>जम्मा कर (Gross Tax)</td><td class="num">${f(grossTax)}</td></tr>
+          ${isFemale ? `<tr><td>महिला छुट −10%</td><td class="num" style="color:green">−${f(femaleDisc)}</td></tr>` : ''}
+          ${medAdj > 0 ? `<tr><td>औषधी मिलान</td><td class="num" style="color:green">−${f(medAdj)}</td></tr>` : ''}
+          <tr class="tax-row"><td>वार्षिक तिर्नु पर्ने कर</td><td class="num">रु. ${f(annualTax)}</td></tr>
+          <tr class="total-row"><td>मासिक TDS</td><td class="num">रु. ${f(monthlyTDS)}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- INCOME TABLE -->
+    <div class="p-box" style="margin-bottom:4px;">
+      <div class="p-box-title">💰 रोजगारीको आय विवरण (Income from Employment)</div>
+      <table class="p-table">
+        <thead><tr><th>क्र.</th><th>विवरण</th><th class="num">मासिक</th><th class="num">महिना</th><th class="num">वार्षिक (रु.)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>मासिक तलव (Salary)</td><td class="num">${f(monthlySalary)}</td><td class="num">12</td><td class="num">${f(salaryAnnual)}</td></tr>
+          <tr><td>2</td><td>ग्रेड अगाडी (Grade Before Inc.) ${gradeCount}×${gradeRate}</td><td class="num">${f(monthlyGrade)}</td><td class="num">${monthsBefore}</td><td class="num">${f(monthlyGrade * monthsBefore)}</td></tr>
+          <tr><td></td><td>ग्रेड पछाडी (Grade After Inc.) ${gradeCount}×${gradeRate}</td><td class="num">${f(monthlyGrade)}</td><td class="num">${monthsAfter}</td><td class="num">${f(monthlyGrade * monthsAfter)}</td></tr>
+          ${techGrade > 0 ? `<tr><td></td><td>प्रविधिक ग्रेड</td><td class="num">${f(techGrade)}</td><td class="num">12</td><td class="num">${f(techIncome)}</td></tr>` : ''}
+          <tr><td>3</td><td>चाडपर्व भत्ता (Festival Bonus)</td><td class="num">${f(festivalBonus)}</td><td class="num">1</td><td class="num">${f(festivalBonus)}</td></tr>
+          <tr><td>4</td><td>वीमा सरकारी (Govt Insurance)</td><td class="num">${f(govtIns)}</td><td class="num">12</td><td class="num">${f(govtInsAnnual)}</td></tr>
+          <tr><td>5</td><td>महंगी भत्ता (Dearness Allowance)</td><td class="num">${f(daMonthly)}</td><td class="num">12</td><td class="num">${f(daAnnual)}</td></tr>
+          <tr><td>6</td><td>पोषाक भत्ता (Uniform)</td><td class="num">—</td><td class="num">1</td><td class="num">${f(uniformAllow)}</td></tr>
+          ${remoteAllow > 0 ? `<tr><td>7</td><td>दुर्गम भत्ता (Remote Allowance)</td><td class="num">${f(remoteAllow)}</td><td class="num">12</td><td class="num">${f(remoteAnnual)}</td></tr>` : ''}
+          ${otherAllow > 0 ? `<tr><td>8</td><td>अन्य भत्ता (Others)</td><td class="num">—</td><td class="num">1</td><td class="num">${f(otherAllow)}</td></tr>` : ''}
+          <tr><td>9</td><td>सञ्चय कोष रोजगारदाता (PF Employer ${(pfRate*100).toFixed(0)}%)</td><td class="num">${f(pfEmpMonth)}</td><td class="num">12</td><td class="num">${f(pfEmpTotal)}</td></tr>
+          ${pen ? `<tr><td>10</td><td>निवृत्तिभरण कोष रोजगारदाता (Pension 6%)</td><td class="num">${f(pensionMonthly)}</td><td class="num">12</td><td class="num">${f(pensionAnnual)}</td></tr>` : ''}
+          <tr class="total-row"><td colspan="4">[क] जम्मा निर्धारणयोग्य आय (Total Assessable Income)</td><td class="num">रु. ${f(totalAssessable)}</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- DEDUCTIONS + TAX SLABS in two cols -->
+    <div class="p-grid">
+
+      <!-- Deductions -->
+      <div class="p-box">
+        <div class="p-box-title">🛡️ कर छुट (Deductions)</div>
+        <table class="p-table">
+          <thead><tr><th>विवरण</th><th class="num">छुट रकम (रु.)</th></tr></thead>
+          <tbody>
+            <tr><td>अवकाश कोष (PF+NIF) छुट</td><td class="num">${f(pfExemption)}</td></tr>
+            ${remoteExemption > 0 ? `<tr><td>दुर्गम क्षेत्र भत्ता छुट</td><td class="num">${f(remoteExemption)}</td></tr>` : ''}
+            <tr><td>बीमा सरकारी छुट (max 40K)</td><td class="num">${f(govtInsEx)}</td></tr>
+            ${personalInsEx > 0 ? `<tr><td>बीमा व्यक्तिगत (max 40K)</td><td class="num">${f(personalInsEx)}</td></tr>` : ''}
+            ${healthInsEx > 0 ? `<tr><td>स्वास्थ्य बीमा (max 20K)</td><td class="num">${f(healthInsEx)}</td></tr>` : ''}
+            ${homeInsEx > 0 ? `<tr><td>निजी भवन बीमा (max 5K)</td><td class="num">${f(homeInsEx)}</td></tr>` : ''}
+            ${foreignEx > 0 ? `<tr><td>बैदेशिक भत्ता छुट (75%)</td><td class="num">${f(foreignEx)}</td></tr>` : ''}
+            ${disabilityEx > 0 ? `<tr><td>अपाङ्गता छुट (50% threshold)</td><td class="num">${f(disabilityEx)}</td></tr>` : ''}
+            ${otherExempt > 0 ? `<tr><td>अन्य छुट</td><td class="num">${f(otherExempt)}</td></tr>` : ''}
+            <tr class="total-row"><td>[ख] जम्मा कट्टी</td><td class="num">रु. ${f(totalDeduction)}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tax Slabs -->
+      <div class="p-box">
+        <div class="p-box-title">📈 कर दायित्व गणना (Tax Liability)</div>
+        <table class="p-table">
+          <thead><tr><th>स्ल्याव</th><th class="num">दर</th><th class="num">रकम</th><th class="num">वार्षिक कर</th><th class="num">मासिक</th></tr></thead>
+          <tbody>
+            <tr class="${sst > 0 ? 'slab-active' : ''}"><td>सामाजिक सुरक्षा कर</td><td class="num">1%</td><td class="num">${f(sstBase)}</td><td class="num">${f(sst)}</td><td class="num">${f(sst/12)}</td></tr>
+            ${slabHtml}
+            <tr class="total-row"><td colspan="3">जम्मा वार्षिक कर</td><td class="num">${f(grossTax)}</td><td class="num">${f(grossTax/12)}</td></tr>
+            ${isFemale ? `<tr><td colspan="3" style="color:green;">महिला छुट −10%</td><td class="num" style="color:green;">−${f(femaleDisc)}</td><td class="num" style="color:green;">−${f(femaleDisc/12)}</td></tr>` : ''}
+            ${medAdj > 0 ? `<tr><td colspan="3" style="color:green;">औषधी मिलान</td><td class="num" style="color:green;">−${f(medAdj)}</td><td></td></tr>` : ''}
+            <tr class="tax-row"><td colspan="3">वार्षिक तिर्नु पर्ने कर</td><td class="num">रु. ${f(annualTax)}</td><td class="num">रु. ${f(monthlyTDS)}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="p-note">
+      ⚠️ ${isFemale ? 'पारिश्रमिक आय मात्र आर्जन गर्ने महिलालाई तिर्नुपर्ने कर रकममा १०% छुट दिई कर गणना गरिएको ।  ' : ''}
+      आयकर (पन्ध्रौं संशोधन) नियमावली, २०७७ को नियम १७ बमोजिम स्वीकृत औषधी उपचार खर्चबापत विल छ भने वास्तविक खर्चको १५% वा रु.१,५०० मध्ये जुन घटी उक्त रकम करमा मिलान गर्न सकिन्छ ।
+      Please use this calculator with caution! Take advice from your tax consultant.
+    </div>
+
+    <div class="p-sign">
+      <div class="p-sign-box">नामथर: ${nameVal}<br>हस्ताक्षर</div>
+      <div class="p-sign-box">मिति (Date): ___________</div>
+      <div class="p-sign-box">लेखा शाखा प्रमुख<br>हस्ताक्षर</div>
+    </div>
+
+    <div class="p-footer">
+      <span>मुद्रण मिति: ${printDateTime}</span>
+      <span>Excel template by Prakash Gautam. Web app by Bibek Rai.</span>
+    </div>
+  `;
+
+  document.getElementById('print-area').innerHTML = html;
+  window.print();
+}
+
+// ─────────────────────────────────────────────────────────
+// UTF-8 with BOM for full Devanagari / Unicode support
+// ─────────────────────────────────────────────────────────
+function exportCSV() {
+  calculate(); // ensure latest values
+
+  const g = sel('gender');
+  const m = sel('marital');
+  const dis = sel('disability');
+  const res = sel('residency');
+  const pen = sel('pension_deduct');
+
+  const gradeMonth = parseInt(sel('grade_month'));
+  const { monthsBefore, monthsAfter } = getGradeMonths(gradeMonth);
+
+  const monthNames = ['','बैशाख','जेठ','आषाढ','श्रावण','भाद्र','आश्विन','कार्तिक','मंसिर','पौष','माघ','फाल्गुन','चैत्र'];
+  const remoteCatNames = ['अन्य','क','ख','ग','घ','ङ'];
+  const remoteCat = parseInt(sel('remote_cat'));
+
+  const n = (id) => parseFloat(document.getElementById(id)?.value) || 0;
+  const t = (id) => (document.getElementById(id)?.textContent || '').replace(/^रु\. ?/, '').trim();
+
+  const monthlySalary   = n('monthly_salary');
+  const gradeCount      = n('grade_count');
+  const gradeRate       = n('grade_rate');
+  const monthlyGrade    = gradeCount * gradeRate;
+  const techGrade       = n('tech_grade');
+  const daMonthly       = n('da_monthly');
+  const uniformAllow    = n('uniform_allowance');
+  const govtIns         = n('govt_insurance');
+  const remoteAllow     = n('remote_allowance');
+  const otherAllow      = n('other_allowances');
+  const pfRate          = n('pf_rate') / 100;
+  const nifMonthly      = n('nif_monthly');
+  const personalIns     = n('personal_insurance');
+  const healthIns       = n('health_insurance');
+  const homeIns         = n('home_insurance');
+  const foreignAllow    = n('foreign_allowance');
+  const otherExempt     = n('other_exemptions');
+  const medExpense      = n('medical_expense');
+  const medAdj          = n('medical_adjustment');
+
+  const pfEmployerMonth = (monthlySalary + monthlyGrade) * pfRate;
+  const festivalBonus   = monthlySalary + monthlyGrade;
+  const gradeIncome     = monthlyGrade * (monthsBefore + monthsAfter);
+  const salaryAnnual    = monthlySalary * 12;
+  const techIncome      = techGrade * 12;
+  const daAnnual        = daMonthly * 12;
+  const govtInsAnnual   = govtIns * 12;
+  const remoteAnnual    = remoteAllow * 12;
+  const pfEmployerTotal = pfEmployerMonth * 12;
+
+  const pensionYes      = pen === 'yes';
+  const pensionRate     = 0.06;
+  const pensionMonthly  = pensionYes ? (monthlySalary + monthlyGrade) * pensionRate : 0;
+  const pensionAnnual   = pensionMonthly * 12;
+
+  const totalAssessable = salaryAnnual + gradeIncome + techIncome + festivalBonus
+    + govtInsAnnual + daAnnual + uniformAllow + remoteAnnual + otherAllow
+    + pfEmployerTotal + pensionAnnual;
+
+  const pfActualBoth    = pfEmployerMonth * 2 * 12;
+  const nifAnnual       = nifMonthly * 12;
+  const pensionEmployee = pensionYes ? pensionMonthly * 12 : 0;
+  const actualRetirement= pfActualBoth + nifAnnual + pensionEmployee;
+  const pfExemption     = Math.min(500000, totalAssessable / 3, actualRetirement);
+
+  const remoteMaxByCategory = [0, 50000, 40000, 30000, 20000, 10000];
+  const remoteExemption = remoteMaxByCategory[remoteCat] || 0;
+  const govtInsExempt   = Math.min(govtIns * 2 * 12, 40000);
+  const personalInsEx   = Math.min(personalIns, 40000);
+  const healthInsEx     = Math.min(healthIns, 20000);
+  const homeInsEx       = Math.min(homeIns, 5000);
+  const foreignEx       = foreignAllow * 0.75;
+  const baseThreshold   = m === 'couple' ? 600000 : 500000;
+  const disabilityEx    = dis === 'yes' ? baseThreshold * 0.5 : 0;
+  const totalDeduction  = pfExemption + remoteExemption + govtInsExempt
+    + personalInsEx + healthInsEx + homeInsEx + foreignEx + disabilityEx + otherExempt;
+
+  const netIncome       = Math.max(0, totalAssessable - totalDeduction);
+  const threshold       = baseThreshold;
+  const taxableIncome   = Math.max(0, netIncome - threshold);
+  const sstBase         = Math.min(netIncome, threshold);
+  const sst             = sstBase * 0.01;
+
+  const slabLimits = [200000, 300000, 1000000, 3000000, Infinity];
+  const slabRates  = [0.10, 0.20, 0.30, 0.36, 0.39];
+  const slabLabels = ['थप २,००,०००','थप ३,००,०००','थप १०,००,०००','थप ३०,००,०००','बाँकी'];
+  let rem = taxableIncome, progTax = 0;
+  const slabRows = [];
+  for (let i = 0; i < slabLimits.length; i++) {
+    const amt = rem <= 0 ? 0 : Math.min(rem, slabLimits[i] === Infinity ? rem : slabLimits[i]);
+    const tax = amt * slabRates[i];
+    slabRows.push({ label: slabLabels[i], rate: (slabRates[i]*100)+'%', amount: amt, tax });
+    progTax += tax;
+    rem -= amt;
+  }
+
+  const grossTax     = sst + progTax;
+  const isFemale     = g === 'female';
+  const femaleDisc   = isFemale ? grossTax * 0.10 : 0;
+  const annualTax    = Math.max(0, grossTax - femaleDisc - medAdj);
+  const monthlyTDS   = annualTax / 12;
+
+  const R = (label, ...vals) => [label, ...vals].map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',');
+
+  const rows = [
+    // ── HEADER ──────────────────────────────────────────
+    R('नेपाल सरकार शिक्षा, विज्ञान तथा प्रविधि मन्त्रालय (Government of Nepal)'),
+    R('आ.ब.२०८२/८३ को रोजगारीको आयको कर गणना (Tax Calculation of Income from Employment - FY 2082/83)'),
+    R(''),
+
+    // ── PERSONAL DETAILS ────────────────────────────────
+    R('व्यक्तिगत तथा रोजगारी सम्बन्धी विवरण (Personal & Employment Details)'),
+    R('नामः (Name)', document.getElementById('name').value || '', 'पान नं. (PAN No.)', document.getElementById('pan').value || ''),
+    R('पदः (Designation)', document.getElementById('designation').value || '', 'सेवाः (Service)', document.getElementById('service').value || ''),
+    R('लिङ्गः (Gender)', g === 'female' ? 'महिला (Female)' : 'पुरुष (Male)', 'पारिवारिक अवस्थाः', m === 'couple' ? 'दम्पती (Couple)' : 'एकल (Single)'),
+    R('अपाङ्गताः (Disability)', dis === 'yes' ? 'अपाङ्ग हो' : 'अपाङ्ग होइन', 'दुर्गम क्षेत्र (Remote)', remoteCatNames[remoteCat] || 'अन्य'),
+    R('बासिन्दाः (Residency)', res === 'resident' ? 'बासिन्दा' : 'गैरबासिन्दा', 'निवृत्तिभरण कोष', pen === 'yes' ? 'कट्टी हुने' : 'कट्टी नहुने'),
+    R('चाडपर्व महिना (Festival Month)', monthNames[parseInt(sel('festival_month'))], 'ग्रेड वृद्धि महिना', monthNames[gradeMonth]),
+    R(''),
+
+    // ── INCOME DETAILS ──────────────────────────────────
+    R('क्र.', 'रोजगारीको आयसम्बन्धी विवरण (Income from Employment)', 'ग्रेड संख्या / दर', 'मासिक रकम', 'महिना संख्या', 'वार्षिक रकम (रु.)'),
+    R('1', 'मासिक तलव (Monthly Salary)', '', monthlySalary.toFixed(2), 12, salaryAnnual.toFixed(2)),
+    R('2', 'ग्रेड (बृद्धि हुनु अगाडी) — Grade before increment', `${gradeCount} × ${gradeRate}`, monthlyGrade.toFixed(2), monthsBefore, (monthlyGrade * monthsBefore).toFixed(2)),
+    R('', 'ग्रेड (बृद्धि भएपछी) — Grade after increment', `${gradeCount} × ${gradeRate}`, monthlyGrade.toFixed(2), monthsAfter, (monthlyGrade * monthsAfter).toFixed(2)),
+    R('', 'प्रविधिक ग्रेड (Technical Grade)', '', techGrade.toFixed(2), 12, techIncome.toFixed(2)),
+    R('3', 'चाडपर्व भत्ता (Festival Allowance)', 'तलव + ग्रेड', festivalBonus.toFixed(2), 1, festivalBonus.toFixed(2)),
+    R('4', 'वीमा सरकारी (Govt Insurance)', '', govtIns.toFixed(2), 12, govtInsAnnual.toFixed(2)),
+    R('5', 'अन्य भत्ता (Other Allowances)', '', '', 1, otherAllow.toFixed(2)),
+    R('6', 'महंगी भत्ता (Dearness Allowance)', '', daMonthly.toFixed(2), 12, daAnnual.toFixed(2)),
+    R('7', 'पोषाक भत्ता (Uniform Allowance)', '', '', 1, uniformAllow.toFixed(2)),
+    R('8', 'स्थानीय / दुर्गम क्षेत्र भत्ता (Remote Area Allowance)', '', remoteAllow.toFixed(2), 12, remoteAnnual.toFixed(2)),
+    R('9', 'सञ्चय कोष रोजगारदाता (PF Employer Contribution)', `${(pfRate*100).toFixed(0)}%`, pfEmployerMonth.toFixed(2), 12, pfEmployerTotal.toFixed(2)),
+    R('10', 'निवृत्तिभरण कोष रोजगारदाता (Pension Employer)', '6%', pensionMonthly.toFixed(2), 12, pensionAnnual.toFixed(2)),
+    R('', '[क] जम्मा निर्धारणयोग्य आय (Total Assessable Income)', '', '', '', totalAssessable.toFixed(2)),
+    R(''),
+
+    // ── DEDUCTIONS ──────────────────────────────────────
+    R('क्र.', 'कर छुट सुविधाहरु (Tax Exemptions / Deductions)', '', 'दर / रकम', 'महिना', 'छुट रकम (रु.)'),
+    R('1', 'सञ्चय कोष — PF (Employee+Employer) छुट', '', (pfActualBoth).toFixed(2), '', ''),
+    R('', 'नागरिक लगानी कोष NIF छुट', '', nifAnnual.toFixed(2), '', ''),
+    R('', 'अवकाश कोष जम्मा छुट (min 5L / आयको १/३ / वास्तविक)', '', actualRetirement.toFixed(2), '', pfExemption.toFixed(2)),
+    R('2', 'निवृत्तिभरण कोष छुट (Pension Exemption)', '', pensionEmployee.toFixed(2), '', '0.00'),
+    R('3', 'नागरिक लगानी कोष (NIF Deduction already above)', '', nifMonthly.toFixed(2), 12, nifAnnual.toFixed(2)),
+    R('4', 'दुर्गम क्षेत्र भत्ता छुट (Remote Area Exemption)', '', '', '', remoteExemption.toFixed(2)),
+    R('5', 'बीमा सरकारी छुट — max 40,000 (Govt Insurance Exemption)', '', (govtIns * 2 * 12).toFixed(2), '', govtInsExempt.toFixed(2)),
+    R('6', 'बीमा व्यक्तिगत — max 40,000 (Personal Insurance)', '', personalIns.toFixed(2), 1, personalInsEx.toFixed(2)),
+    R('7', 'स्वास्थ्य बीमा — max 20,000 (Health Insurance)', '', healthIns.toFixed(2), 1, healthInsEx.toFixed(2)),
+    R('8', 'निजी भवन बीमा — max 5,000 (Home Insurance)', '', homeIns.toFixed(2), 1, homeInsEx.toFixed(2)),
+    R('9', 'बैदेशिक भत्ता छुट 75% (Foreign Allowance Exemption)', '75%', foreignAllow.toFixed(2), 1, foreignEx.toFixed(2)),
+    R('10', 'अपाङ्ग व्यक्ति छुट — 50% of threshold (Disability Exemption)', '50%', baseThreshold.toFixed(2), 1, disabilityEx.toFixed(2)),
+    R('11', 'अन्य छुट सुविधा (Other Exemptions)', '', '', 1, otherExempt.toFixed(2)),
+    R('', '[ख] जम्मा कट्टी (Total Deductions)', '', '', '', totalDeduction.toFixed(2)),
+    R(''),
+
+    // ── NET & TAXABLE ────────────────────────────────────
+    R('[ग]', 'खुद आय (Net Assessable Income) [ग = क − ख]', '', '', '', netIncome.toFixed(2)),
+    R('[घ]', 'छुट सीमा (Threshold)', m === 'couple' ? 'दम्पती' : 'एकल', threshold.toFixed(2), 1, threshold.toFixed(2)),
+    R('[ङ]', 'करयोग्य आय (Taxable Income) [ङ = ग − घ]', '', '', '', taxableIncome.toFixed(2)),
+    R(''),
+
+    // ── TAX SLABS ───────────────────────────────────────
+    R('[च]', 'कर दायित्वको गणना (Calculation of Tax Liability)'),
+    R('स्ल्याव', 'विवरण', 'दर', 'सीमा / रकम', 'वार्षिक लाग्ने कर', 'मासिक कर'),
+    R('1', 'सामाजिक सुरक्षा कर (SST) — शुरु', '1%', sstBase.toFixed(2), sst.toFixed(2), (sst/12).toFixed(2)),
+    ...slabRows.map((s, i) => R(i+2, `पारिश्रमिक कर — ${s.label}`, s.rate, s.amount.toFixed(2), s.tax.toFixed(2), (s.tax/12).toFixed(4))),
+    R('', 'जम्मा भुक्तानी गर्नुपर्ने कर दायित्व (Gross Tax)', '', '', grossTax.toFixed(2), (grossTax/12).toFixed(4)),
+    R(''),
+
+    // ── FINAL TAX ───────────────────────────────────────
+    R('अन्तिम कर (Final Tax Calculation)'),
+    R('', 'जम्मा वार्षिक कर (Gross Annual Tax)', '', '', grossTax.toFixed(2), (grossTax/12).toFixed(4)),
+    R('', 'महिला छुट −10% (Female Discount)', isFemale ? '-10%' : 'N/A', '', (-femaleDisc).toFixed(2), (-femaleDisc/12).toFixed(4)),
+    R('', 'औषधी उपचार खर्च मिलान (Medical Adjustment)', '', medExpense.toFixed(2), (-medAdj).toFixed(2), (-medAdj/12).toFixed(4)),
+    R('', '[अन्तिम] वार्षिक तिर्नुपर्ने कर (Annual Tax Payable)', '', '', annualTax.toFixed(2), monthlyTDS.toFixed(4)),
+    R('', 'मासिक TDS बुझाउनु पर्ने (Monthly TDS)', '', '', '', monthlyTDS.toFixed(2)),
+    R(''),
+
+    // ── TAX RATES REFERENCE ─────────────────────────────
+    R('आ.व. २०८२।८३ — कर दर सन्दर्भ (Tax Rate Reference)'),
+    R('व्यक्ति (Individual)', 'आम्दानी सम्म', 'कर थप हुने रकम', 'प्रतिशत', 'कर रकम', 'जम्मा कर रकम'),
+    R('', 500000, 500000, '1%', 5000, 5000),
+    R('', 700000, 200000, '10%', 20000, 25000),
+    R('', 1000000, 300000, '20%', 60000, 85000),
+    R('', 2000000, 1000000, '30%', 300000, 385000),
+    R('', 5000000, 3000000, '36%', 1080000, 1465000),
+    R('', '५० लाख भन्दा बढी', '(अतिरिक्त)', '39%', '', ''),
+    R(''),
+    R('दम्पती (Couple)', 'आम्दानी सम्म', 'कर थप हुने रकम', 'प्रतिशत', 'कर रकम', 'जम्मा कर रकम'),
+    R('', 600000, 600000, '1%', 6000, 6000),
+    R('', 800000, 200000, '10%', 20000, 26000),
+    R('', 1100000, 300000, '20%', 60000, 86000),
+    R('', 2000000, 900000, '30%', 270000, 356000),
+    R('', 5000000, 3000000, '36%', 1080000, 1436000),
+    R('', '५० लाख भन्दा बढी', '(अतिरिक्त)', '39%', '', ''),
+    R(''),
+    R('नोट (Note)', 'यो कर गणना सहायकको रूपमा मात्र प्रयोग गर्नुहोस् । Please use this calculator with caution! Take advice from your tax consultant.'),
+    R('Template based on', 'Tax Calculation Sheet 208283 — रमा खतिवडा', '', 'FY 2082-83', '', ''),
+  ];
+
+  const csvContent = '\uFEFF' + rows.join('\r\n'); // UTF-8 BOM + CRLF line endings
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const nameVal = document.getElementById('name').value.trim() || 'TaxCalculation';
+  a.href     = url;
+  a.download = `Tax_Calculation_${nameVal}_2082-83.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Run on load
+calculate();
+</script>
+</body>
+</html>
