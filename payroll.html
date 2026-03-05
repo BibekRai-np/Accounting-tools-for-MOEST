@@ -295,6 +295,42 @@
     </footer>
 
     <script>
+        //---------------------------------------------------
+//disable shortcut for View source code and inspect
+//---------------------------------------------------
+// Disable right-click context menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Disable specific keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === 'F12') {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+I (Inspect Element)
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+      e.preventDefault();
+    }
+    // Ctrl+U (View Source)
+    if (e.ctrlKey && e.key === 'u') {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+C (Inspect in some browsers)
+    if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+      e.preventDefault();
+    }
+    // Ctrl+S (Save Page) – optional
+    if (e.ctrlKey && e.key === 's') {
+      e.preventDefault();
+    }
+  });
+
         let allData = [];
         let currentSearchRecords = {}; 
         let currentSortedMonths = [];
