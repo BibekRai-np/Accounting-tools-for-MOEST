@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ne">
 <head>
@@ -283,22 +284,138 @@
     margin-top: 8px;
   }
 
+  .tooltip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: default;
+  }
+
+.tooltip-wrap:hover .tooltip-box,
+.tooltip-icon:focus + .tooltip-box {
+  display: block;
+}
+.tooltip-box {
+  pointer-events: auto;
+}
+.card {
+  overflow: visible;
+}
+.tooltip-box {
+  width: max-content;
+  max-width: 90vw;
+}
+
+  .tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: help;
+    flex-shrink: 0;
+    font-style: normal;
+  }
+
+  .tooltip-box {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    min-width: 336px;
+    max-width: 476px;
+    background: #1a3a6b;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.6;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    z-index: 999;
+    pointer-events: none;
+    font-style: normal;
+  }
+
+  .tooltip-box::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 16px;
+    border: 6px solid transparent;
+    border-top-color: #1a3a6b;
+  }
+
+  .tooltip-wrap:hover .tooltip-box,
+  .tooltip-wrap:focus-within .tooltip-box {
+    display: block;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
   .calc-btn {
     width: 100%;
-    padding: 13px;
-    background: var(--primary);
+    padding: 12px 16px;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 15px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 700;
     font-family: 'Yatra One', serif;
     cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    position: relative;
+    overflow: hidden;
   }
 
-  .calc-btn:hover { background: var(--primary-light); }
+  .calc-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.15s;
+    border-radius: inherit;
+  }
+
+  .calc-btn:hover { filter: brightness(1.1); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.22); }
+  .calc-btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0,0,0,0.18); filter: brightness(0.96); }
+
+  .calc-btn:hover::after { background: rgba(255,255,255,0.08); }
+
+  .btn-recalc  { background: linear-gradient(135deg, #1a3a6b 0%, #2d5fa6 100%); }
+  .btn-export  { background: linear-gradient(135deg, #1a7a4a 0%, #2da065 100%); }
+  .btn-print   { background: linear-gradient(135deg, #6b1a8b 0%, #9b3dbf 100%); }
+  .btn-pdf     { background: linear-gradient(135deg, #b5390a 0%, #e05a1a 100%); }
+
+  .btn-icon { font-size: 17px; line-height: 1; }
+  .btn-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; }
+  .btn-text .btn-main { font-size: 13px; font-weight: 700; }
+  .btn-text .btn-sub  { font-size: 10px; font-weight: 400; opacity: 0.85; font-family: 'Annapurna SIL', sans-serif; }
+
+  @media (max-width: 880px) {
+    .btn-group { flex-direction: row; flex-wrap: wrap; }
+    .btn-group .calc-btn { flex: 1 1 140px; min-width: 130px; }
+  }
+
+  @media (max-width: 400px) {
+    .btn-group .calc-btn { flex: 1 1 100%; }
+  }
 
   .footer {
     text-align: center;
@@ -493,6 +610,7 @@
     }
   }
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 
@@ -622,22 +740,35 @@
         </div>
 
         <hr class="divider">
-        <div class="sub-label">📊 ग्रेड विवरण (Grade Details) — ग्रेड = ग्रेड संख्या × प्रति ग्रेड दर</div>
+        <div class="sub-label">📊 ग्रेड विवरण (Grade Details) — ग्रेड = ग्रेड संख्या × प्रति ग्रेड दर
+	 <span class="tooltip-wrap" style="margin-left:6px;">
+          <span class="tooltip-icon" tabindex="0">?</span>
+          <span class="tooltip-box">अन्तिम ग्रेड संख्या ख्याल गर्नुपर्ने।</span>
+
+	</div>
         <div class="grid-3">
           <div class="field">
-            <label>ग्रेड संख्या (Grade Count)</label>
+            <label>ग्रेड संख्या — वृद्धि अगाडी (Grade Count Before)</label>
             <input type="number" id="grade_count" value="8" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>ग्रेड संख्या — वृद्धि पछी (Grade Count After) <span style="color:#c8102e">*</span></label>
+            <input type="number" id="grade_count_after" value="9" oninput="calculate()">
           </div>
           <div class="field">
             <label>प्रति ग्रेड दर रु. (Rate per Grade Step)</label>
             <input type="number" id="grade_rate" value="1625" oninput="calculate()">
           </div>
           <div class="field">
-            <label>मासिक ग्रेड (Monthly Grade) रु.</label>
+            <label>मासिक ग्रेड — वृद्धि अगाडी रु.</label>
             <input type="number" id="monthly_grade" readonly value="13000">
           </div>
+          <div class="field">
+            <label>मासिक ग्रेड — वृद्धि पछी रु.</label>
+            <input type="number" id="monthly_grade_after" readonly value="14625">
+          </div>
         </div>
-        <div class="note-box">ग्रेड वृद्धि हुने महिना र वृद्धि हुनु अगाडीको महिना स्वतः गणना हुनेछ।</div>
+        <div class="note-box">ग्रेड वृद्धि हुने महिना र वृद्धि हुनु अगाडीको महिना स्वतः गणना हुनेछ। वृद्धि पछीको ग्रेड संख्यामा +१ थप गर्नुहोस्।</div>
 
         <hr class="divider">
         <div class="sub-label">🧮 स्वतः गणना — ग्रेड वृद्धि महिनाको आधारमा</div>
@@ -678,15 +809,19 @@
         </div>
 
         <hr class="divider">
-        <div class="sub-label">🏦 सञ्चय / निवृत्तिभरण कोष (Provident / Pension Fund)</div>
+        <div class="sub-label">🏦 सञ्चय / निवृत्तिभरण / नागरिक लगानी कोष (Provident / Pension / NIF)</div>
         <div class="grid-2">
           <div class="field">
             <label>सञ्चय कोष दर % (PF Rate - Employee %)</label>
             <input type="number" id="pf_rate" value="10" oninput="calculate()">
           </div>
           <div class="field">
-            <label>नागरिक लगानी कोष मासिक रु. (NIF/Month)</label>
+            <label>नागरिक लगानी कोष — ग्रेड वृद्धि हुन अगाडी मासिक रु.</label>
             <input type="number" id="nif_monthly" value="10000" oninput="calculate()">
+          </div>
+          <div class="field">
+            <label>नागरिक लगानी कोष — ग्रेड वृद्धि भएपश्चात मासिक रु.</label>
+            <input type="number" id="nif_monthly_after" value="10000" oninput="calculate()">
           </div>
         </div>
       </div>
@@ -696,25 +831,83 @@
     <div class="card">
       <div class="card-header"><span class="icon">🛡️</span> कर छुट सुविधाहरु (Tax Exemptions)</div>
       <div class="card-body">
+        <div class="sub-label">🏦 सञ्चय कोष (Provident Fund)</div>
         <div class="grid-2">
           <div class="field">
-            <label>बीमा व्यक्तिगत वार्षिक रु. (Personal Insurance/Year) <span style="color:#c8102e">max 40,000</span></label>
+            <label>सञ्चय कोष — ग्रेड वृद्धि हुन अगाडी (मासिक)</label>
+            <input type="number" id="pf_before_monthly" value="0" readonly>
+            <div class="inline-calc">= तलव+ग्रेड × दर × महिना</div>
+          </div>
+          <div class="field">
+            <label>सञ्चय कोष — ग्रेड वृद्धि भएपश्चात (मासिक)</label>
+            <input type="number" id="pf_after_monthly" value="0" readonly>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="sub-label">🏦 निवृत्तीभरण कोष (Pension Fund)</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>निवृत्तीभरण कोष — ग्रेड वृद्धि हुन अगाडी (मासिक)</label>
+            <input type="number" id="pension_ex_before_monthly" value="0" readonly>
+          </div>
+          <div class="field">
+            <label>निवृत्तीभरण कोष — ग्रेड वृद्धि भएपश्चात (मासिक)</label>
+            <input type="number" id="pension_ex_after_monthly" value="0" readonly>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="sub-label">🏦 नागरिक लगानी कोष (Citizens Investment Trust / NIF)</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>नागरिक लगानी कोष — ग्रेड वृद्धि हुन अगाडी (मासिक)</label>
+            <input type="number" id="nif_before_monthly" value="0" readonly>
+          </div>
+          <div class="field">
+            <label>नागरिक लगानी कोष — ग्रेड वृद्धि भएपश्चात (मासिक)</label>
+            <input type="number" id="nif_after_monthly" value="0" readonly>
+          </div>
+        </div>
+        <div class="note-box">💡 सञ्चय, निवृत्तिभरण र नागरिक लगानी कोष स्वतः गणना हुन्छ। जम्मा अवकाश कोष छुट: रु.५,००,०००, कुल आयको १/३, वा वास्तविक योगदान मध्ये जुन घटी।</div>
+        <hr class="divider">
+        <div class="sub-label">🌄 स्थानीय (दुर्गम क्षेत्र) भत्ता</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>स्थानीय (दुर्गम क्षेत्र) भत्ता वार्षिक रु. <span style="color:#c8102e">क=50K, ख=40K, ग=30K, घ=20K, ङ=10K</span></label>
+            <input type="number" id="remote_ex_annual" value="0" readonly>
+          </div>
+        </div>
+        <hr class="divider">
+        <div class="sub-label">📋 बीमा (Insurance)</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>बीमा (सरकारी) वार्षिक रु. <span style="color:#c8102e">max 40,000</span></label>
+            <input type="number" id="govt_ins_ex_display" value="0" readonly>
+          </div>
+          <div class="field">
+            <label>बीमा व्यक्तिगत वार्षिक रु. <span style="color:#c8102e">max 40,000</span></label>
             <input type="number" id="personal_insurance" value="0" oninput="calculate()">
           </div>
           <div class="field">
-            <label>स्वास्थ्य बीमा वार्षिक रु. (Health Insurance/Year) <span style="color:#c8102e">max 20,000</span></label>
+            <label>स्वास्थ्य विमा वार्षिक रु. <span style="color:#c8102e">max 20,000</span></label>
             <input type="number" id="health_insurance" value="0" oninput="calculate()">
           </div>
           <div class="field">
-            <label>निजी भवन बीमा वार्षिक रु. (Home Insurance/Year) <span style="color:#c8102e">max 5,000</span></label>
+            <label>करदाताको स्वमित्वमा रहेको निजी भवनको बीमा (वार्षिक प्रिमियम) <span style="color:#c8102e">max 5,000</span></label>
             <input type="number" id="home_insurance" value="0" oninput="calculate()">
           </div>
+        </div>
+        <hr class="divider">
+        <div class="grid-2">
           <div class="field">
-            <label>बैदेशिक भत्ता वार्षिक रु. (Foreign Allowance/Year) <span style="color:#c8102e">75% exempt</span></label>
+            <label>बैदेशिक भत्तामा छुट वार्षिक रु. (कुटनीतिक नियोगका कर्मचारी) <span style="color:#c8102e">75% exempt</span></label>
             <input type="number" id="foreign_allowance" value="0" oninput="calculate()">
           </div>
+          <div class="field">
+            <label>अपाङ्ग व्यक्तिले पाउने छुट सुविधा</label>
+            <input type="number" id="disability_ex_display" value="0" readonly>
+          </div>
           <div class="field" style="grid-column: span 2;">
-            <label>अन्य छुट सुविधा वार्षिक रु. (Other Exemptions/Year)</label>
+            <label>अन्य छुट सुविधा वार्षिक रु. (बैधानिक छुट सुविधा भएमा मात्र)</label>
             <input type="number" id="other_exemptions" value="0" oninput="calculate()">
           </div>
         </div>
@@ -726,7 +919,12 @@
 
     <!-- Medical Adjustment -->
     <div class="card">
-      <div class="card-header"><span class="icon">🏥</span> औषधी उपचार खर्च (Medical Expense Adjustment)</div>
+      <div class="card-header"><span class="icon">🏥</span> औषधी उपचार खर्च (Medical Expense Adjustment)
+        <span class="tooltip-wrap" style="margin-left:6px;">
+          <span class="tooltip-icon" tabindex="0">?</span>
+          <span class="tooltip-box">माथि हिसावको अतिरिक्त आयकर (पन्ध्रौँ संशोधन) नियमावली, २०७७ को नियम १७ को उपनियम (३) बमोजिम स्वीकृत औषधी उपचार खर्च बापत विल छ भने उक्त विल बमोजिमको वास्तविक खर्च रकमको १५% वा १,५००/- जुन घटी हुन्छ उक्त रकम तिर्नुपर्ने करमा मिलान गर्न सकिने।</span>
+        </span>
+      </div>
       <div class="card-body">
         <div class="grid-2">
           <div class="field">
@@ -755,16 +953,23 @@
         <div class="result-section">
           <div class="result-title">क — निर्धारणयोग्य आय (Assessable Income)</div>
           <div class="result-row"><span class="label">मासिक तलव × १२</span><span class="value" id="r_salary">0</span></div>
-          <div class="result-row"><span class="label">ग्रेड आय (Grade Income)</span><span class="value" id="r_grade_income">0</span></div>
-          <div class="result-row"><span class="label">प्रविधिक ग्रेड × १२</span><span class="value" id="r_tech_income">0</span></div>
-          <div class="result-row"><span class="label">चाडपर्व भत्ता</span><span class="value" id="r_festival">0</span></div>
+          <div class="result-row" style="background:#f8f9ff;"><span class="label">ग्रेड (बृद्धि हुनु अगाडी)</span><span class="value" id="r_grade_before">0</span></div>
+          <div class="result-row" style="background:#f8f9ff;"><span class="label">ग्रेड (बृद्धि भएपछी)</span><span class="value" id="r_grade_after">0</span></div>
+          <div class="result-row"><span class="label">प्रविधिक ग्रेड (भएमा मात्र) × १२</span><span class="value" id="r_tech_income">0</span></div>
+          <div class="result-row"><span class="label">चाडपर्व</span><span class="value" id="r_festival">0</span></div>
           <div class="result-row"><span class="label">वीमा सरकारी × १२</span><span class="value" id="r_govt_ins">0</span></div>
+          <div class="result-row"><span class="label">अन्य भत्ता (वार्षिक)</span><span class="value" id="r_other_allow">0</span></div>
           <div class="result-row"><span class="label">महंगी भत्ता × १२</span><span class="value" id="r_da">0</span></div>
           <div class="result-row"><span class="label">पोषाक भत्ता</span><span class="value" id="r_uniform">0</span></div>
-          <div class="result-row"><span class="label">दुर्गम भत्ता × १२</span><span class="value" id="r_remote">0</span></div>
-          <div class="result-row"><span class="label">अन्य भत्ता</span><span class="value" id="r_other_allow">0</span></div>
-          <div class="result-row"><span class="label">सञ्चय कोष (रोजगारदाता)</span><span class="value" id="r_pf_employer">0</span></div>
-          <div class="result-row"><span class="label">निवृत्तिभरण कोष (रोजगारदाता)</span><span class="value" id="r_pension_employer">0</span></div>
+          <div class="result-row"><span class="label">स्थानीय (दुर्गम क्षेत्र) भत्ता × १२</span><span class="value" id="r_remote">0</span></div>
+          <div class="result-row" style="background:#f8f9ff;"><span class="label">सञ्चय कोष (ग्रेड वृद्धि हुन अगाडी)</span><span class="value" id="r_pf_before">0</span></div>
+          <div class="result-row" style="background:#f8f9ff;"><span class="label">सञ्चय कोष (ग्रेड वृद्धि भएपश्चात)</span><span class="value" id="r_pf_after">0</span></div>
+          <div class="result-row" style="background:#fff3f3;"><span class="label">निवृत्तिभरण कोष (ग्रेड वृद्धि हुन अगाडी)</span><span class="value" id="r_pension_before">0</span></div>
+          <div class="result-row" style="background:#fff3f3;"><span class="label">निवृत्तिभरण कोष (ग्रेड वृद्धि भएपश्चात)</span><span class="value" id="r_pension_after">0</span></div>
+          <!-- keep old ids for backward compat (hidden) -->
+          <span id="r_grade_income" style="display:none">0</span>
+          <span id="r_pf_employer" style="display:none">0</span>
+          <span id="r_pension_employer" style="display:none">0</span>
         </div>
 
         <div class="result-total">
@@ -774,16 +979,22 @@
 
         <!-- Deductions -->
         <div class="result-section">
-          <div class="result-title">ख — कर छुट (Deductions)</div>
-          <div class="result-row"><span class="label">अवकाश कोष छुट (PF+NIF)</span><span class="value" id="r_pf_exemption">0</span></div>
-          <div class="result-row"><span class="label">दुर्गम भत्ता छुट</span><span class="value" id="r_remote_exempt">0</span></div>
-          <div class="result-row"><span class="label">बीमा सरकारी (×२ सीमा 40K)</span><span class="value" id="r_govt_ins_exempt">0</span></div>
+          <div class="result-title">ख — कर छुट सुविधाहरु (Tax Exemption)</div>
+          <div class="result-row" style="background:#f8f9ff;"><span class="label">सञ्चय कोष (ग्रेड वृद्धि हुन अगाडी)</span><span class="value" id="r_pf_ex_before">0</span></div>
+          <div class="result-row" style="background:#f8f9ff;"><span class="label">सञ्चय कोष (ग्रेड वृद्धि भएपश्चात)</span><span class="value" id="r_pf_ex_after">0</span></div>
+          <div class="result-row" style="background:#fff3f3;"><span class="label">निवृत्तीभरण कोष (ग्रेड वृद्धि हुन अगाडी)</span><span class="value" id="r_pen_ex_before">0</span></div>
+          <div class="result-row" style="background:#fff3f3;"><span class="label">निवृत्तीभरण कोष (ग्रेड वृद्धि भएपश्चात)</span><span class="value" id="r_pen_ex_after">0</span></div>
+          <div class="result-row" style="background:#f0fff4;"><span class="label">नागरिक लगानी कोष (ग्रेड वृद्धि हुन अगाडी)</span><span class="value" id="r_nif_ex_before">0</span></div>
+          <div class="result-row" style="background:#f0fff4;"><span class="label">नागरिक लगानी कोष (ग्रेड वृद्धि भएपश्चात)</span><span class="value" id="r_nif_ex_after">0</span></div>
+          <div class="result-row"><span class="label" style="font-size:11px;color:#888;">▶ अवकाश कोष जम्मा छुट (min: 5L / आयको १/३ / वास्तविक)</span><span class="value" id="r_pf_exemption" style="color:#1a3a6b;font-weight:800;">0</span></div>
+          <div class="result-row"><span class="label">स्थानीय (दुर्गम क्षेत्र) भत्ता</span><span class="value" id="r_remote_exempt">0</span></div>
+          <div class="result-row"><span class="label">बीमा (सरकारी) × २ (सीमा 40K)</span><span class="value" id="r_govt_ins_exempt">0</span></div>
           <div class="result-row"><span class="label">बीमा व्यक्तिगत (सीमा 40K)</span><span class="value" id="r_personal_ins">0</span></div>
-          <div class="result-row"><span class="label">स्वास्थ्य बीमा (सीमा 20K)</span><span class="value" id="r_health_ins">0</span></div>
-          <div class="result-row"><span class="label">निजी भवन बीमा (सीमा 5K)</span><span class="value" id="r_home_ins">0</span></div>
-          <div class="result-row"><span class="label">बैदेशिक भत्ता (75%)</span><span class="value" id="r_foreign">0</span></div>
-          <div class="result-row"><span class="label">अपाङ्गता छुट</span><span class="value" id="r_disability">0</span></div>
-          <div class="result-row"><span class="label">अन्य छुट</span><span class="value" id="r_other_exempt">0</span></div>
+          <div class="result-row"><span class="label">स्वास्थ्य विमा (सीमा 20K)</span><span class="value" id="r_health_ins">0</span></div>
+          <div class="result-row"><span class="label">करदाताको निजी भवनको बीमा (सीमा 5K)</span><span class="value" id="r_home_ins">0</span></div>
+          <div class="result-row"><span class="label">बैदेशिक भत्तामा छुट (75%)</span><span class="value" id="r_foreign">0</span></div>
+          <div class="result-row"><span class="label">अपाङ्ग व्यक्तिले पाउने छुट</span><span class="value" id="r_disability">0</span></div>
+          <div class="result-row"><span class="label">अन्य छुट सुविधा</span><span class="value" id="r_other_exempt">0</span></div>
         </div>
 
         <div class="result-total">
@@ -859,9 +1070,36 @@
       </div>
     </div>
 
-    <button class="calc-btn" onclick="calculate()">🔄 पुनः गणना गर्नुहोस् (Recalculate)</button>
-  <button class="calc-btn export-btn" onclick="exportCSV()" style="margin-top:10px; background:#1a7a4a;">📥 CSV निर्यात गर्नुहोस् (Export CSV — UTF-8)</button>
-  <button class="calc-btn" onclick="printReport()" style="margin-top:10px; background:#7b2d8b;">🖨️ प्रिन्ट गर्नुहोस् (Print Report)</button>
+    <div class="btn-group">
+      <button class="calc-btn btn-recalc" onclick="calculate()">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">
+          <span class="btn-main">पुनः गणना गर्नुहोस्</span>
+          <span class="btn-sub">Recalculate</span>
+        </span>
+      </button>
+      <button class="calc-btn btn-export" onclick="exportCSV()">
+        <span class="btn-icon">📥</span>
+        <span class="btn-text">
+          <span class="btn-main">CSV निर्यात गर्नुहोस्</span>
+          <span class="btn-sub">Export CSV — UTF-8</span>
+        </span>
+      </button>
+      <button class="calc-btn btn-print" onclick="printReport()">
+        <span class="btn-icon">🖨️</span>
+        <span class="btn-text">
+          <span class="btn-main">प्रिन्ट गर्नुहोस्</span>
+          <span class="btn-sub">Print Report</span>
+        </span>
+      </button>
+      <button class="calc-btn btn-pdf" onclick="downloadPDF()">
+        <span class="btn-icon">📄</span>
+        <span class="btn-text">
+          <span class="btn-main">PDF डाउनलोड</span>
+          <span class="btn-sub">Download PDF</span>
+        </span>
+      </button>
+    </div>
   </div>
 
 </div>
@@ -879,6 +1117,41 @@
 </div>
 
 <script>
+//---------------------------------------------------
+//disable shortcut for View source code and inspect
+//---------------------------------------------------
+// Disable right-click context menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Disable specific keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === 'F12') {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+I (Inspect Element)
+    if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+      e.preventDefault();
+    }
+    // Ctrl+U (View Source)
+    if (e.ctrlKey && e.key === 'u') {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+C (Inspect in some browsers)
+    if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+      e.preventDefault();
+    }
+    // Ctrl+S (Save Page) – optional
+    if (e.ctrlKey && e.key === 's') {
+      e.preventDefault();
+    }
+  });
 // ─────────────────────────────────────────────────────────
 // Helper: Format number as रु. X,XX,XXX.XX (Nepali)
 // ─────────────────────────────────────────────────────────
@@ -986,54 +1259,61 @@ function calculate() {
 
   const monthlySalary = val('monthly_salary');
   const gradeCount = val('grade_count');
+  const gradeCountAfter = val('grade_count_after');
   const gradeRate = val('grade_rate');
   const techGrade = val('tech_grade');
-  const monthlyGradeAmt = gradeCount * gradeRate;
 
-  // Update computed grade display
+  // Grade amounts — BEFORE increment uses gradeCount, AFTER uses gradeCountAfter
+  const monthlyGradeAmt       = gradeCount * gradeRate;       // before
+  const monthlyGradeAmtAfter  = gradeCountAfter * gradeRate;  // after
+
+  // Update computed grade display fields
   document.getElementById('monthly_grade').value = monthlyGradeAmt.toFixed(2);
+  if (document.getElementById('monthly_grade_after'))
+    document.getElementById('monthly_grade_after').value = monthlyGradeAmtAfter.toFixed(2);
 
   const { monthsBefore, monthsAfter } = getGradeMonths(gradeMonth);
   document.getElementById('months_before').value = monthsBefore;
   document.getElementById('months_after').value = monthsAfter;
 
-  // Grade income
-  const gradeIncomeBefore = monthlyGradeAmt * monthsBefore;
-  const gradeIncomeAfter = monthlyGradeAmt * monthsAfter;
-  const totalGradeIncome = gradeIncomeBefore + gradeIncomeAfter;
+  // Grade income — correct: before uses monthlyGradeAmt, after uses monthlyGradeAmtAfter
+  const gradeIncomeBefore = monthlyGradeAmt      * monthsBefore;
+  const gradeIncomeAfter  = monthlyGradeAmtAfter * monthsAfter;
+  const totalGradeIncome  = gradeIncomeBefore + gradeIncomeAfter;
 
-  // Festival bonus: at festival time, salary + grade (check if festival is before/after increment)
-  const festFyPos = (festivalMonth - 4 + 12) % 12;
-  const gradeFyPos = (gradeMonth - 4 + 12) % 12;
-  // If festival FY position is before grade increment FY position → festival uses grade at that time (same as before increment)
-  const festivalGrade = monthlyGradeAmt; // grade count stays same, only timing matters
-  const festivalBonus = (monthlySalary + festivalGrade);
+  // Festival bonus: check whether festival falls before or after grade increment month in FY
+  const festFyPos  = (festivalMonth - 4 + 12) % 12;
+  const gradeFyPos = (gradeMonth    - 4 + 12) % 12;
+  // If festival is before grade increment → use old grade, else new grade
+  const festivalGradeAmt = (festFyPos < gradeFyPos) ? monthlyGradeAmt : monthlyGradeAmtAfter;
+  const festivalBonus = monthlySalary + festivalGradeAmt;
 
-  const techGradeIncome = techGrade * 12;
-  const daIncome = val('da_monthly') * 12;
-  const uniformIncome = val('uniform_allowance');
-  const govtInsIncome = val('govt_insurance') * 12;
+  const techGradeIncome   = techGrade * 12;
+  const daIncome          = val('da_monthly') * 12;
+  const uniformIncome     = val('uniform_allowance');
+  const govtInsIncome     = val('govt_insurance') * 12;
   const remoteAllowIncome = val('remote_allowance') * 12;
-  const otherAllowIncome = val('other_allowances');
+  const otherAllowIncome  = val('other_allowances');
 
-  // PF rate (employee share): same as employer share
+  // PF rate
   const pfRate = val('pf_rate') / 100;
 
-  // PF employer contribution to income:
-  // employer contributes same % of (salary + grade) each month
-  const salaryBeforeInc = monthlySalary; // salary same throughout
-  const pfEmployerBefore = salaryBeforeInc * pfRate * monthsBefore +
-                           (salaryBeforeInc + monthlyGradeAmt) * pfRate * monthsBefore * 0; 
-  // Simplified: PF base = salary + grade for that period
-  const pfEmployerMonth = (monthlySalary + monthlyGradeAmt) * pfRate;
-  const pfEmployerIncomeBefore = pfEmployerMonth * monthsBefore;
-  const pfEmployerIncomeAfter = pfEmployerMonth * monthsAfter;
-  const pfEmployerTotalIncome = pfEmployerIncomeBefore + pfEmployerIncomeAfter;
+  // PF employer contribution — base is (salary + grade) per period
+  const pfEmployerMonthBefore = (monthlySalary + monthlyGradeAmt)      * pfRate;  // before increment
+  const pfEmployerMonthAfter  = (monthlySalary + monthlyGradeAmtAfter) * pfRate;  // after increment
+  const pfEmployerIncomeBefore = pfEmployerMonthBefore * monthsBefore;
+  const pfEmployerIncomeAfter  = pfEmployerMonthAfter  * monthsAfter;
+  const pfEmployerTotalIncome  = pfEmployerIncomeBefore + pfEmployerIncomeAfter;
 
-  // Pension (6% of salary+grade) if applicable
+  // Pension (6%) — base is (salary + grade) per period
   const pensionRate = 0.06;
-  const pensionEmployerMonthly = pensionDeductYes ? (monthlySalary + monthlyGradeAmt) * pensionRate : 0;
-  const pensionEmployerIncome = pensionDeductYes ? (pensionEmployerMonthly * 12) : 0;
+  const pensionEmployerMonthlyBefore = pensionDeductYes ? (monthlySalary + monthlyGradeAmt)      * pensionRate : 0;
+  const pensionEmployerMonthlyAfter  = pensionDeductYes ? (monthlySalary + monthlyGradeAmtAfter) * pensionRate : 0;
+  const pensionEmployerBefore        = pensionEmployerMonthlyBefore * monthsBefore;
+  const pensionEmployerAfter         = pensionEmployerMonthlyAfter  * monthsAfter;
+  const pensionEmployerIncome        = pensionEmployerBefore + pensionEmployerAfter;
+  // keep a single monthly for print/CSV (use after-grade as representative)
+  const pensionEmployerMonthly = pensionEmployerMonthlyAfter;
 
   // Salary × 12
   const salaryAnnual = monthlySalary * 12;
@@ -1046,16 +1326,22 @@ function calculate() {
 
   // ── DEDUCTIONS ──────────────────────────────────────────
 
-  // Actual PF contribution (employee × 2 = both sides) annual
-  const pfActualEmployee = pfEmployerMonth * 12; // employee = same rate
-  const pfActualBoth = pfActualEmployee * 2;  // employee + employer
+  // Actual PF contribution (employee + employer) — split by period
+  const pfActualBothBefore = pfEmployerMonthBefore * 2 * monthsBefore;  // employee+employer before
+  const pfActualBothAfter  = pfEmployerMonthAfter  * 2 * monthsAfter;   // employee+employer after
+  const pfActualBoth       = pfActualBothBefore + pfActualBothAfter;
 
-  // NIF (Citizens Investment Trust)
-  const nifMonthly = val('nif_monthly');
-  const nifAnnual = nifMonthly * 12;
+  // NIF (Citizens Investment Trust) — separate before/after monthly amounts
+  const nifMonthly      = val('nif_monthly');
+  const nifMonthlyAfter = val('nif_monthly_after') || nifMonthly;
+  const nifAnnualBefore = nifMonthly      * monthsBefore;
+  const nifAnnualAfter  = nifMonthlyAfter * monthsAfter;
+  const nifAnnual       = nifAnnualBefore + nifAnnualAfter;
 
-  // Pension fund employee contribution
-  const pensionEmployee = pensionDeductYes ? (monthlySalary + monthlyGradeAmt) * pensionRate * 12 : 0;
+  // Pension fund employee contribution (split)
+  const pensionEmployeeBefore = pensionDeductYes ? pensionEmployerMonthlyBefore * monthsBefore * 2 : 0;
+  const pensionEmployeeAfter  = pensionDeductYes ? pensionEmployerMonthlyAfter  * monthsAfter  * 2 : 0;
+  const pensionEmployee       = pensionEmployeeBefore + pensionEmployeeAfter;
 
   // Total actual retirement contribution
   const actualRetirementContrib = pfActualBoth + nifAnnual + pensionEmployee;
@@ -1098,7 +1384,12 @@ function calculate() {
   const taxableIncome = Math.max(0, netIncome - threshold);
 
   // ── TAX CALCULATION ─────────────────────────────────────
-  const { sst, sstBase, slabDetails, progressiveTax, grossTax } = calcTax(netIncome, threshold, marital === 'couple');
+  const { sst: sstRaw, sstBase: sstBaseRaw, slabDetails, progressiveTax, grossTax: grossTaxRaw } = calcTax(netIncome, threshold, marital === 'couple');
+
+  // When निवृत्तिभरण कोष = कट्टी हुने (6%), SST is zero
+  const sst      = pensionDeductYes ? 0 : sstRaw;
+  const sstBase  = pensionDeductYes ? 0 : sstBaseRaw;
+  const grossTax = sst + progressiveTax;
 
   // Female discount: 10% off if female with employment income only
   const isFemale = gender === 'female';
@@ -1118,6 +1409,8 @@ function calculate() {
 
   setFmt('r_salary', salaryAnnual, '');
   setFmt('r_grade_income', totalGradeIncome, '');
+  setFmt('r_grade_before', gradeIncomeBefore, '');
+  setFmt('r_grade_after', gradeIncomeAfter, '');
   setFmt('r_tech_income', techGradeIncome, '');
   setFmt('r_festival', festivalBonus, '');
   setFmt('r_govt_ins', govtInsIncome, '');
@@ -1126,8 +1419,39 @@ function calculate() {
   setFmt('r_remote', remoteAllowIncome, '');
   setFmt('r_other_allow', otherAllowIncome, '');
   setFmt('r_pf_employer', pfEmployerTotalIncome, '');
+  setFmt('r_pf_before', pfEmployerIncomeBefore, '');
+  setFmt('r_pf_after',  pfEmployerIncomeAfter,  '');
   setFmt('r_pension_employer', pensionEmployerIncome, '');
+  setFmt('r_pension_before', pensionEmployerBefore, '');
+  setFmt('r_pension_after',  pensionEmployerAfter,  '');
   setFmt('r_total_assessable', totalAssessable, 'रु. ');
+
+  // Update exemption form display fields (read-only, auto-computed)
+  // PF: (employee+employer) × months per period — shown as monthly contribution amount
+  if (document.getElementById('pf_before_monthly')) document.getElementById('pf_before_monthly').value = pfEmployerMonthBefore.toFixed(2);
+  if (document.getElementById('pf_after_monthly'))  document.getElementById('pf_after_monthly').value  = pfEmployerMonthAfter.toFixed(2);
+  if (document.getElementById('pension_ex_before_monthly')) document.getElementById('pension_ex_before_monthly').value = pensionEmployerMonthlyBefore.toFixed(2);
+  if (document.getElementById('pension_ex_after_monthly'))  document.getElementById('pension_ex_after_monthly').value  = pensionEmployerMonthlyAfter.toFixed(2);
+  const nifMonthlyV = val('nif_monthly');
+  const nifMonthlyAfterV = val('nif_monthly_after') || nifMonthlyV;
+  if (document.getElementById('nif_before_monthly')) document.getElementById('nif_before_monthly').value = nifMonthlyV.toFixed(2);
+  if (document.getElementById('nif_after_monthly'))  document.getElementById('nif_after_monthly').value  = nifMonthlyAfterV.toFixed(2);
+  if (document.getElementById('remote_ex_annual'))    document.getElementById('remote_ex_annual').value    = remoteExemption.toFixed(2);
+  if (document.getElementById('govt_ins_ex_display')) document.getElementById('govt_ins_ex_display').value = govtInsExempt.toFixed(2);
+  if (document.getElementById('disability_ex_display')) document.getElementById('disability_ex_display').value = disabilityExempt.toFixed(2);
+
+  // Exemption result breakdown (before/after) — show actual contributions per period
+  // PF (employee+employer) before and after
+  setFmt('r_pf_ex_before', pfActualBothBefore, '');
+  setFmt('r_pf_ex_after',  pfActualBothAfter,  '');
+  // Pension (employee side) before and after
+  setFmt('r_pen_ex_before', pensionEmployeeBefore, '');
+  setFmt('r_pen_ex_after',  pensionEmployeeAfter,  '');
+  // NIF — split equally (same monthly amount both periods)
+  const nifBefore = nifMonthlyV      * monthsBefore;
+  const nifAfter  = nifMonthlyAfterV * monthsAfter;
+  setFmt('r_nif_ex_before', nifBefore, '');
+  setFmt('r_nif_ex_after',  nifAfter,  '');
 
   setFmt('r_pf_exemption', pfExemptionLimit, '');
   setFmt('r_remote_exempt', remoteExemption, '');
@@ -1224,8 +1548,10 @@ function printReport() {
 
   const monthlySalary  = val('monthly_salary');
   const gradeCount     = val('grade_count');
+  const gradeCountAfter= val('grade_count_after');
   const gradeRate      = val('grade_rate');
   const monthlyGrade   = gradeCount * gradeRate;
+  const monthlyGradeAfterVal = gradeCountAfter * gradeRate;
   const techGrade      = val('tech_grade');
   const daMonthly      = val('da_monthly');
   const uniformAllow   = val('uniform_allowance');
@@ -1234,6 +1560,7 @@ function printReport() {
   const otherAllow     = val('other_allowances');
   const pfRate         = val('pf_rate') / 100;
   const nifMonthly     = val('nif_monthly');
+  const nifMonthlyAfterP = val('nif_monthly_after') || nifMonthly;
   const personalIns    = val('personal_insurance');
   const healthIns      = val('health_insurance');
   const homeIns        = val('home_insurance');
@@ -1242,25 +1569,38 @@ function printReport() {
   const medExpense     = val('medical_expense');
   const medAdj         = val('medical_adjustment');
 
-  const pfEmpMonth   = (monthlySalary + monthlyGrade) * pfRate;
-  const festivalBonus= monthlySalary + monthlyGrade;
+  const pfEmpMonthBefore = (monthlySalary + monthlyGrade)          * pfRate;
+  const pfEmpMonthAfter  = (monthlySalary + monthlyGradeAfterVal)  * pfRate;
+  // Festival: check if before or after increment
+  const festFyPosP  = (festMonth  - 4 + 12) % 12;
+  const gradeFyPosP = (gradeMonth - 4 + 12) % 12;
+  const festGrade   = (festFyPosP < gradeFyPosP) ? monthlyGrade : monthlyGradeAfterVal;
+  const festivalBonus = monthlySalary + festGrade;
   const salaryAnnual = monthlySalary * 12;
-  const gradeIncome  = monthlyGrade * (monthsBefore + monthsAfter);
+  const gradeIncomeB = monthlyGrade         * monthsBefore;
+  const gradeIncomeA = monthlyGradeAfterVal * monthsAfter;
+  const gradeIncome  = gradeIncomeB + gradeIncomeA;
   const techIncome   = techGrade * 12;
   const daAnnual     = daMonthly * 12;
   const govtInsAnnual= govtIns * 12;
   const remoteAnnual = remoteAllow * 12;
-  const pfEmpTotal   = pfEmpMonth * 12;
-  const pensionMonthly = pen ? (monthlySalary + monthlyGrade) * 0.06 : 0;
-  const pensionAnnual  = pensionMonthly * 12;
+  const pfEmpTotalB  = pfEmpMonthBefore * monthsBefore;
+  const pfEmpTotalA  = pfEmpMonthAfter  * monthsAfter;
+  const pfEmpTotal   = pfEmpTotalB + pfEmpTotalA;
+  const pensionRateP = 0.06;
+  const pensionMonthlyBefore = pen ? (monthlySalary + monthlyGrade)         * pensionRateP : 0;
+  const pensionMonthlyAfter  = pen ? (monthlySalary + monthlyGradeAfterVal) * pensionRateP : 0;
+  const pensionAnnual        = pensionMonthlyBefore * monthsBefore + pensionMonthlyAfter * monthsAfter;
+  // use after as representative monthly for display
+  const pensionMonthly = pensionMonthlyAfter;
 
   const totalAssessable = salaryAnnual + gradeIncome + techIncome + festivalBonus
     + govtInsAnnual + daAnnual + uniformAllow + remoteAnnual + otherAllow
     + pfEmpTotal + pensionAnnual;
 
-  const pfActualBoth   = pfEmpMonth * 2 * 12;
-  const nifAnnual      = nifMonthly * 12;
-  const pensionEmp     = pen ? pensionMonthly * 12 : 0;
+  const pfActualBoth   = (pfEmpMonthBefore * monthsBefore + pfEmpMonthAfter * monthsAfter) * 2;
+  const nifAnnual      = nifMonthly * monthsBefore + nifMonthlyAfterP * monthsAfter;
+  const pensionEmp     = pensionMonthlyBefore * monthsBefore + pensionMonthlyAfter * monthsAfter;
   const actualRetire   = pfActualBoth + nifAnnual + pensionEmp;
   const pfExemption    = Math.min(500000, totalAssessable / 3, actualRetire);
 
@@ -1279,7 +1619,8 @@ function printReport() {
   const netIncome   = Math.max(0, totalAssessable - totalDeduction);
   const threshold   = baseThreshold;
   const taxableInc  = Math.max(0, netIncome - threshold);
-  const sstBase     = Math.min(netIncome, threshold);
+  const sstBaseRawP = Math.min(netIncome, threshold);
+  const sstBase     = pen ? 0 : sstBaseRawP;
   const sst         = sstBase * 0.01;
 
   const slabLimits = [200000, 300000, 1000000, 3000000, Infinity];
@@ -1371,8 +1712,8 @@ function printReport() {
         <thead><tr><th>क्र.</th><th>विवरण</th><th class="num">मासिक</th><th class="num">महिना</th><th class="num">वार्षिक (रु.)</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>मासिक तलव (Salary)</td><td class="num">${f(monthlySalary)}</td><td class="num">12</td><td class="num">${f(salaryAnnual)}</td></tr>
-          <tr><td>2</td><td>ग्रेड अगाडी (Grade Before Inc.) ${gradeCount}×${gradeRate}</td><td class="num">${f(monthlyGrade)}</td><td class="num">${monthsBefore}</td><td class="num">${f(monthlyGrade * monthsBefore)}</td></tr>
-          <tr><td></td><td>ग्रेड पछाडी (Grade After Inc.) ${gradeCount}×${gradeRate}</td><td class="num">${f(monthlyGrade)}</td><td class="num">${monthsAfter}</td><td class="num">${f(monthlyGrade * monthsAfter)}</td></tr>
+          <tr><td>2</td><td>ग्रेड अगाडी (Grade Before Inc.) ${gradeCount}×${gradeRate}</td><td class="num">${f(monthlyGrade)}</td><td class="num">${monthsBefore}</td><td class="num">${f(gradeIncomeB)}</td></tr>
+          <tr><td></td><td>ग्रेड पछाडी (Grade After Inc.) ${gradeCountAfter}×${gradeRate}</td><td class="num">${f(monthlyGradeAfterVal)}</td><td class="num">${monthsAfter}</td><td class="num">${f(gradeIncomeA)}</td></tr>
           ${techGrade > 0 ? `<tr><td></td><td>प्रविधिक ग्रेड</td><td class="num">${f(techGrade)}</td><td class="num">12</td><td class="num">${f(techIncome)}</td></tr>` : ''}
           <tr><td>3</td><td>चाडपर्व भत्ता (Festival Bonus)</td><td class="num">${f(festivalBonus)}</td><td class="num">1</td><td class="num">${f(festivalBonus)}</td></tr>
           <tr><td>4</td><td>वीमा सरकारी (Govt Insurance)</td><td class="num">${f(govtIns)}</td><td class="num">12</td><td class="num">${f(govtInsAnnual)}</td></tr>
@@ -1380,8 +1721,9 @@ function printReport() {
           <tr><td>6</td><td>पोषाक भत्ता (Uniform)</td><td class="num">—</td><td class="num">1</td><td class="num">${f(uniformAllow)}</td></tr>
           ${remoteAllow > 0 ? `<tr><td>7</td><td>दुर्गम भत्ता (Remote Allowance)</td><td class="num">${f(remoteAllow)}</td><td class="num">12</td><td class="num">${f(remoteAnnual)}</td></tr>` : ''}
           ${otherAllow > 0 ? `<tr><td>8</td><td>अन्य भत्ता (Others)</td><td class="num">—</td><td class="num">1</td><td class="num">${f(otherAllow)}</td></tr>` : ''}
-          <tr><td>9</td><td>सञ्चय कोष रोजगारदाता (PF Employer ${(pfRate*100).toFixed(0)}%)</td><td class="num">${f(pfEmpMonth)}</td><td class="num">12</td><td class="num">${f(pfEmpTotal)}</td></tr>
-          ${pen ? `<tr><td>10</td><td>निवृत्तिभरण कोष रोजगारदाता (Pension 6%)</td><td class="num">${f(pensionMonthly)}</td><td class="num">12</td><td class="num">${f(pensionAnnual)}</td></tr>` : ''}
+          <tr><td>9</td><td>सञ्चय कोष रोजगारदाता — वृद्धि अगाडी (PF Employer ${(pfRate*100).toFixed(0)}%)</td><td class="num">${f(pfEmpMonthBefore)}</td><td class="num">${monthsBefore}</td><td class="num">${f(pfEmpTotalB)}</td></tr>
+          <tr><td></td><td>सञ्चय कोष रोजगारदाता — वृद्धि पछी (PF Employer ${(pfRate*100).toFixed(0)}%)</td><td class="num">${f(pfEmpMonthAfter)}</td><td class="num">${monthsAfter}</td><td class="num">${f(pfEmpTotalA)}</td></tr>
+          ${pen ? `<tr><td>10</td><td>निवृत्तिभरण रोजगारदाता — वृद्धि अगाडी (Pension 6%)</td><td class="num">${f(pensionMonthlyBefore)}</td><td class="num">${monthsBefore}</td><td class="num">${f(pensionMonthlyBefore*monthsBefore)}</td></tr><tr><td></td><td>निवृत्तिभरण रोजगारदाता — वृद्धि पछी (Pension 6%)</td><td class="num">${f(pensionMonthlyAfter)}</td><td class="num">${monthsAfter}</td><td class="num">${f(pensionMonthlyAfter*monthsAfter)}</td></tr>` : ''}
           <tr class="total-row"><td colspan="4">[क] जम्मा निर्धारणयोग्य आय (Total Assessable Income)</td><td class="num">रु. ${f(totalAssessable)}</td></tr>
         </tbody>
       </table>
@@ -1439,6 +1781,40 @@ function printReport() {
       <div class="p-sign-box">लेखा शाखा प्रमुख<br>हस्ताक्षर</div>
     </div>
 
+    <!-- MONTHLY SALARY TABLE -->
+    <div class="p-box" style="margin-top:6px;">
+      <div class="p-box-title">📅 मासिक तलव (Monthly Salary Details)</div>
+      <table class="p-table">
+        <thead>
+          <tr>
+            <th>विवरण</th>
+            <th class="num">ग्रेड वृद्धि अगाडी<br>(${monthNames[gradeMonth]} अगाडी)</th>
+            <th class="num">ग्रेड वृद्धि पछी<br>(${monthNames[gradeMonth]} पछी)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>तलब</td><td class="num">${f(monthlySalary)}</td><td class="num">${f(monthlySalary)}</td></tr>
+          <tr><td>ग्रेड (${gradeCount} संख्या / ${gradeCountAfter} संख्या × ${gradeRate} दर)</td><td class="num">${f(monthlyGrade)}</td><td class="num">${f(monthlyGradeAfterVal)}</td></tr>
+          <tr><td>क.सं.कोष (तलब) — ${(pfRate*100).toFixed(0)}% of (तलब+ग्रेड)</td><td class="num">${f(pfEmpMonthBefore)}</td><td class="num">${f(pfEmpMonthAfter)}</td></tr>
+          <tr><td>ना.ल.कोष (तलब) कट्टी</td><td class="num" style="color:#c8102e;">−${f(nifMonthly)}</td><td class="num" style="color:#c8102e;">−${f(nifMonthlyAfterP)}</td></tr>
+          <tr><td>निवृत्तीभरण कोष (तलब) — 6% of (तलब+ग्रेड)</td><td class="num">${pen ? f(pensionMonthlyBefore) : '—'}</td><td class="num">${pen ? f(pensionMonthlyAfter) : '—'}</td></tr>
+          <tr><td>सामाजिक सुरक्षा कर (तलब) कट्टी — मासिक TDS</td><td class="num" style="color:#c8102e;">−${f(sst/12)}</td><td class="num" style="color:#c8102e;">−${f(sst/12)}</td></tr>
+          <tr><td>पारिश्रमिक कर (तलब) कट्टी — मासिक TDS</td><td class="num" style="color:#c8102e;">−${f(progTax/12)}</td><td class="num" style="color:#c8102e;">−${f(progTax/12)}</td></tr>
+          <tr><td>योगदानमा आधारीत/सावधिक बिमा कोष (तलब) — सरकारी</td><td class="num">${f(govtIns)}</td><td class="num">${f(govtIns)}</td></tr>
+          <tr><td>महंगी भत्ता</td><td class="num">${f(daMonthly)}</td><td class="num">${f(daMonthly)}</td></tr>
+          <tr style="background:#f8f9ff;"><td><strong>अन्य भत्ता</strong> — ईन्घन</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr style="background:#f8f9ff;"><td style="padding-left:16px;">मर्मत</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr style="background:#f8f9ff;"><td style="padding-left:16px;">सञ्चार</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr style="background:#f8f9ff;"><td style="padding-left:16px;">ह.स.चा.</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr class="total-row">
+            <td><strong>जम्मा (Net Monthly Take-Home)</strong></td>
+            <td class="num"><strong>${f(monthlySalary + monthlyGrade + daMonthly - pfEmpMonthBefore - nifMonthly - (pen ? pensionMonthlyBefore : 0) - sst/12 - progTax/12)}</strong></td>
+            <td class="num"><strong>${f(monthlySalary + monthlyGradeAfterVal + daMonthly - pfEmpMonthAfter - nifMonthlyAfterP - (pen ? pensionMonthlyAfter : 0) - sst/12 - progTax/12)}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="p-footer">
       <span>मुद्रण मिति: ${printDateTime}</span>
       <span>Excel template by Prakash Gautam. Web app by Bibek Rai.</span>
@@ -1450,11 +1826,75 @@ function printReport() {
 }
 
 // ─────────────────────────────────────────────────────────
+// DOWNLOAD PDF — identical output to Print
+// ─────────────────────────────────────────────────────────
+function downloadPDF() {
+  calculate();    // ensure latest values
+  printReport();  // populates #print-area with the exact same HTML as print
+
+  const nameVal = (document.getElementById('name').value || '').trim();
+  const panVal  = (document.getElementById('pan').value  || '').trim();
+  const fileName = [nameVal, panVal].filter(Boolean).join('_') || 'TaxCalculation';
+
+  const btn = document.querySelector('.btn-pdf');
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-text"><span class="btn-main">तयार हुँदैछ...</span><span class="btn-sub">Generating PDF</span></span>';
+  btn.disabled = true;
+
+  const element = document.getElementById('print-area');
+
+  // html2canvas cannot render display:none — move off-screen then restore
+  const prevStyle = element.getAttribute('style') || '';
+  element.style.cssText = [
+    'display:block',
+    'position:fixed',
+    'top:0',
+    'left:-9999px',
+    'width:794px',       // A4 at 96dpi ≈ 794px
+    'background:#fff',
+    'z-index:-1',
+    'padding:16px',
+  ].join(';');
+
+  const opt = {
+    margin:      [8, 8, 8, 8],
+    filename:    `${fileName}.pdf`,
+    image:       { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      letterRendering: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 794,
+    },
+    jsPDF: {
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait',
+    },
+    pagebreak: { mode: ['css', 'legacy'] },
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    element.style.cssText = prevStyle;
+    element.style.display = 'none';
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+  }).catch((err) => {
+    console.error('PDF error:', err);
+    element.style.cssText = prevStyle;
+    element.style.display = 'none';
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+  });
+}
+
+
+// ─────────────────────────────────────────────────────────
 // UTF-8 with BOM for full Devanagari / Unicode support
 // ─────────────────────────────────────────────────────────
 function exportCSV() {
-  calculate(); // ensure latest values
-
   const g = sel('gender');
   const m = sel('marital');
   const dis = sel('disability');
@@ -1473,8 +1913,10 @@ function exportCSV() {
 
   const monthlySalary   = n('monthly_salary');
   const gradeCount      = n('grade_count');
+  const gradeCountAfter = n('grade_count_after');
   const gradeRate       = n('grade_rate');
   const monthlyGrade    = gradeCount * gradeRate;
+  const monthlyGradeAfter = gradeCountAfter * gradeRate;
   const techGrade       = n('tech_grade');
   const daMonthly       = n('da_monthly');
   const uniformAllow    = n('uniform_allowance');
@@ -1483,6 +1925,7 @@ function exportCSV() {
   const otherAllow      = n('other_allowances');
   const pfRate          = n('pf_rate') / 100;
   const nifMonthly      = n('nif_monthly');
+  const nifMonthlyAfterC= n('nif_monthly_after') || nifMonthly;
   const personalIns     = n('personal_insurance');
   const healthIns       = n('health_insurance');
   const homeIns         = n('home_insurance');
@@ -1491,28 +1934,38 @@ function exportCSV() {
   const medExpense      = n('medical_expense');
   const medAdj          = n('medical_adjustment');
 
-  const pfEmployerMonth = (monthlySalary + monthlyGrade) * pfRate;
-  const festivalBonus   = monthlySalary + monthlyGrade;
-  const gradeIncome     = monthlyGrade * (monthsBefore + monthsAfter);
+  const pfEmployerMonthBefore = (monthlySalary + monthlyGrade)       * pfRate;
+  const pfEmployerMonthAfter  = (monthlySalary + monthlyGradeAfter)  * pfRate;
+  // Festival: before or after increment?
+  const festFyPosC  = (parseInt(sel('festival_month')) - 4 + 12) % 12;
+  const gradeFyPosC = (gradeMonth - 4 + 12) % 12;
+  const festGradeC  = (festFyPosC < gradeFyPosC) ? monthlyGrade : monthlyGradeAfter;
+  const festivalBonus   = monthlySalary + festGradeC;
+  const gradeIncomeCB   = monthlyGrade      * monthsBefore;
+  const gradeIncomeCA   = monthlyGradeAfter * monthsAfter;
+  const gradeIncome     = gradeIncomeCB + gradeIncomeCA;
   const salaryAnnual    = monthlySalary * 12;
   const techIncome      = techGrade * 12;
   const daAnnual        = daMonthly * 12;
   const govtInsAnnual   = govtIns * 12;
   const remoteAnnual    = remoteAllow * 12;
-  const pfEmployerTotal = pfEmployerMonth * 12;
+  const pfEmployerTotalB= pfEmployerMonthBefore * monthsBefore;
+  const pfEmployerTotalA= pfEmployerMonthAfter  * monthsAfter;
+  const pfEmployerTotal = pfEmployerTotalB + pfEmployerTotalA;
 
   const pensionYes      = pen === 'yes';
   const pensionRate     = 0.06;
-  const pensionMonthly  = pensionYes ? (monthlySalary + monthlyGrade) * pensionRate : 0;
-  const pensionAnnual   = pensionMonthly * 12;
+  const pensionMonthlyB = pensionYes ? (monthlySalary + monthlyGrade)      * pensionRate : 0;
+  const pensionMonthlyA = pensionYes ? (monthlySalary + monthlyGradeAfter) * pensionRate : 0;
+  const pensionAnnual   = pensionMonthlyB * monthsBefore + pensionMonthlyA * monthsAfter;
 
   const totalAssessable = salaryAnnual + gradeIncome + techIncome + festivalBonus
     + govtInsAnnual + daAnnual + uniformAllow + remoteAnnual + otherAllow
     + pfEmployerTotal + pensionAnnual;
 
-  const pfActualBoth    = pfEmployerMonth * 2 * 12;
-  const nifAnnual       = nifMonthly * 12;
-  const pensionEmployee = pensionYes ? pensionMonthly * 12 : 0;
+  const pfActualBoth    = (pfEmployerMonthBefore * monthsBefore + pfEmployerMonthAfter * monthsAfter) * 2;
+  const nifAnnual       = nifMonthly * monthsBefore + nifMonthlyAfterC * monthsAfter;
+  const pensionEmployee = pensionMonthlyB * monthsBefore + pensionMonthlyA * monthsAfter;
   const actualRetirement= pfActualBoth + nifAnnual + pensionEmployee;
   const pfExemption     = Math.min(500000, totalAssessable / 3, actualRetirement);
 
@@ -1531,7 +1984,8 @@ function exportCSV() {
   const netIncome       = Math.max(0, totalAssessable - totalDeduction);
   const threshold       = baseThreshold;
   const taxableIncome   = Math.max(0, netIncome - threshold);
-  const sstBase         = Math.min(netIncome, threshold);
+  const sstBaseRawC     = Math.min(netIncome, threshold);
+  const sstBase         = (pen === 'yes') ? 0 : sstBaseRawC;
   const sst             = sstBase * 0.01;
 
   const slabLimits = [200000, 300000, 1000000, 3000000, Infinity];
@@ -1574,8 +2028,8 @@ function exportCSV() {
     // ── INCOME DETAILS ──────────────────────────────────
     R('क्र.', 'रोजगारीको आयसम्बन्धी विवरण (Income from Employment)', 'ग्रेड संख्या / दर', 'मासिक रकम', 'महिना संख्या', 'वार्षिक रकम (रु.)'),
     R('1', 'मासिक तलव (Monthly Salary)', '', monthlySalary.toFixed(2), 12, salaryAnnual.toFixed(2)),
-    R('2', 'ग्रेड (बृद्धि हुनु अगाडी) — Grade before increment', `${gradeCount} × ${gradeRate}`, monthlyGrade.toFixed(2), monthsBefore, (monthlyGrade * monthsBefore).toFixed(2)),
-    R('', 'ग्रेड (बृद्धि भएपछी) — Grade after increment', `${gradeCount} × ${gradeRate}`, monthlyGrade.toFixed(2), monthsAfter, (monthlyGrade * monthsAfter).toFixed(2)),
+    R('2', 'ग्रेड (बृद्धि हुनु अगाडी) — Grade before increment', `${gradeCount} × ${gradeRate}`, monthlyGrade.toFixed(2), monthsBefore, gradeIncomeCB.toFixed(2)),
+    R('', 'ग्रेड (बृद्धि भएपछी) — Grade after increment', `${gradeCountAfter} × ${gradeRate}`, monthlyGradeAfter.toFixed(2), monthsAfter, gradeIncomeCA.toFixed(2)),
     R('', 'प्रविधिक ग्रेड (Technical Grade)', '', techGrade.toFixed(2), 12, techIncome.toFixed(2)),
     R('3', 'चाडपर्व भत्ता (Festival Allowance)', 'तलव + ग्रेड', festivalBonus.toFixed(2), 1, festivalBonus.toFixed(2)),
     R('4', 'वीमा सरकारी (Govt Insurance)', '', govtIns.toFixed(2), 12, govtInsAnnual.toFixed(2)),
@@ -1583,8 +2037,10 @@ function exportCSV() {
     R('6', 'महंगी भत्ता (Dearness Allowance)', '', daMonthly.toFixed(2), 12, daAnnual.toFixed(2)),
     R('7', 'पोषाक भत्ता (Uniform Allowance)', '', '', 1, uniformAllow.toFixed(2)),
     R('8', 'स्थानीय / दुर्गम क्षेत्र भत्ता (Remote Area Allowance)', '', remoteAllow.toFixed(2), 12, remoteAnnual.toFixed(2)),
-    R('9', 'सञ्चय कोष रोजगारदाता (PF Employer Contribution)', `${(pfRate*100).toFixed(0)}%`, pfEmployerMonth.toFixed(2), 12, pfEmployerTotal.toFixed(2)),
-    R('10', 'निवृत्तिभरण कोष रोजगारदाता (Pension Employer)', '6%', pensionMonthly.toFixed(2), 12, pensionAnnual.toFixed(2)),
+    R('9', 'सञ्चय कोष रोजगारदाता — वृद्धि अगाडी (PF Employer)', `${(pfRate*100).toFixed(0)}%`, pfEmployerMonthBefore.toFixed(2), monthsBefore, pfEmployerTotalB.toFixed(2)),
+    R('', 'सञ्चय कोष रोजगारदाता — वृद्धि पछी (PF Employer)', `${(pfRate*100).toFixed(0)}%`, pfEmployerMonthAfter.toFixed(2), monthsAfter, pfEmployerTotalA.toFixed(2)),
+    R('10', 'निवृत्तिभरण कोष रोजगारदाता — वृद्धि अगाडी (Pension)', '6%', pensionMonthlyB.toFixed(2), monthsBefore, (pensionMonthlyB*monthsBefore).toFixed(2)),
+    R('', 'निवृत्तिभरण कोष रोजगारदाता — वृद्धि पछी (Pension)', '6%', pensionMonthlyA.toFixed(2), monthsAfter, (pensionMonthlyA*monthsAfter).toFixed(2)),
     R('', '[क] जम्मा निर्धारणयोग्य आय (Total Assessable Income)', '', '', '', totalAssessable.toFixed(2)),
     R(''),
 
