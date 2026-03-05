@@ -1525,7 +1525,7 @@ function calculate() {
   let notes = [];
   if (isFemale) notes.push('✅ महिलाको पारिश्रमिक आयमा १०% कर छुट लागू भएको');
   if (disabilityYes) notes.push('✅ अपाङ्ग व्यक्तिको लागि थप ' + fmt(disabilityExempt, '') + ' छुट लागू');
-  notes.push(`📌 अवकाश कोष छुट: रु. ${pfExemptionLimit.toFixed(2)} (min of रु.5,00,000 / कुल आयको १/३ / वास्तविक योगदान)`);
+  notes.push(`📌 अवकाश कोष छुट: रु. ${pfExemptionLimit.toFixed(2)} (रु.5,00,000, कुल आयको १/३ र वास्तविक योगदान मध्ये कम)`);
   document.getElementById('result_note').innerHTML = notes.join('<br>');
 }
 
